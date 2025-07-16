@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mapa del Pormishuevismo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <div id="map"></div>
+  <div id="sidebar">
+    <div class="titulo-principal">
+      <h1>Pormishuevismo</h1>
+      <span>Mapa de un movimiento artístico</span>
+    </div>
+    <h2>Filtrar</h2>
+    <div id="filtros">
+      <div class="filtro">
+        <label for="provincia-select">Provincia:</label>
+        <select id="provincia-select">
+          <option value="todas">Todas</option>
+        </select>
+      </div>
+
+      <div class="filtro">
+        <label for="tipo-select">Tipo:</label>
+        <select id="tipo-select">
+          <option value="todos">Todos</option>
+          <option value="rotonda">Rotonda</option>
+          <option value="pabellon">Pabellón deportivo</option>
+          <option value="urbanizacion">Urbanización</option>
+          <option value="auditorio">Auditorio</option>
+          <option value="museo">Centro de arte / Museo</option>
+          <option value="parking">Parking</option>
+          <option value="aeropuerto">Aeropuerto</option>
+          <option value="puerto">Puerto</option>
+          <option value="campo de golf">Campo de Golf</option>
+          <option value="alojamiento turistico">Alojamiento Turístico</option>
+        </select>
+      </div>
+
+      <div class="filtro">
+        <label for="puntuacion-select">Puntuación:</label>
+        <select id="puntuacion-select">
+          <option value="todos">Todas</option>
+          <option value="1">1 🥚</option>
+          <option value="2">2 🥚🥚</option>
+          <option value="3">3 🥚🥚🥚</option>
+          <option value="4">4 🥚🥚🥚🥚</option>
+          <option value="5">5 🥚🥚🥚🥚🥚</option>
+        </select>
+      </div>
+    </div>
+    <div id="lista-puntos">
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="script.js"></script>
+</body>
+
+</html>
