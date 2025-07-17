@@ -22,7 +22,7 @@ body {
 }
 
 .titulo-principal {
-    background-color: #333;
+    background-color: #000000; 
     color: white;
     padding: 1.5rem 1rem;
     margin: -1rem -1rem 1.5rem -1rem; /* Usa márgenes negativos para que ocupe todo el ancho */
@@ -30,13 +30,13 @@ body {
 }
 
 .titulo-principal h1 {
-    margin: 0 0 0.25rem 0;
-    font-size: 1.8rem;
-    font-weight: 700;
+    margin: 0 0 0.5rem 0; /* Slightly increased margin */
+    font-size: 1.6rem;      /* Reduced font size */
+    font-weight: 500;      /* Lighter font weight */
 }
 
 .titulo-principal span {
-    font-size: 1rem;
+    font-size: 0.9rem;     /* Reduced font size */
     opacity: 0.8;
 }
 
@@ -48,10 +48,45 @@ body {
   letter-spacing: 0.05em;
 }
 
-#filtros {
+#reset-filters {
+    background-color: #f0f0f0; /* Light gray background */
+    color: #333;          /* Darker text color */
+    padding: 0.5rem 1rem;   /* Reduced padding */
+    border: 1px solid #ccc; /* Added a subtle border */
+    border-radius: 0;       /* Removed border radius */
+    cursor: pointer;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;     /* Reduced font size */
+}
+
+
+#search-bar {
+    display: flex;
+    margin-bottom: 1rem;
+}
+
+#search-input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #ccc; /* Subtle border */
+    border-radius: 0;       /* No border radius */
+    font-size: 0.9rem;     /* Reduced font size */
+}
+
+#search-button {
+    padding: 0.5rem;
+    border: 1px solid #ccc; /* Subtle border */
+    border-left: none;
+    border-radius: 0;       /* No border radius */
+    background-color: #f0f0f0; /* Light gray background */
+    cursor: pointer;
+}
+
+
+#filtros { /* Reduced gap between filter elements */
   display: flex;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem; /* Reduced margin */
 }
 
 .filtro {
@@ -60,9 +95,11 @@ body {
 
 .filtro label {
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;  /* Reduced margin */
   font-weight: bold;
 }
+
+
 
 .punto {
   font-size: 1rem;
@@ -72,14 +109,15 @@ body {
   flex-direction: column;
   gap: 0.5rem;
   margin-bottom: 1rem;
-  padding: 1rem;
+  border-left: 0.2rem solid #ccc;  /* Subtle left border */
+  padding: 0.8rem;              /* Reduced padding */
   background: #fff;
-  border: 1px solid #ccc;
+  border: 1px solid #eee;       /* Very light border */
 }
 
 /* Se resalta tanto al pasar el ratón por encima como al hacerlo sobre el marcador */
 #lista-puntos .punto:hover, .punto.punto-highlight {
-  background: #eee;
+    border-left-color: #007bff; /* Cambia el color del borde al pasar el ratón */
 }
 
 .imagen-placeholder {
@@ -103,20 +141,25 @@ body {
   }
 
 .datos-punto strong {
-    font-weight: bold;
+    font-weight: bold; 
 }
 
-.datos-punto a {
-    display: inline-block;
-    padding: 0.5rem 1rem;
-    background-color: #3d3d3d;
-    color: white;
-    text-decoration: none;
-    border-radius: 0.25rem;
+.datos-punto a { /* Nuevo estilo para el enlace "Ver en prensa" */
+    color: #007bff;  /* Color azul del enlace */
+    text-decoration: none; /* Elimina el subrayado */
+    font-size: 0.9rem; /* Reduce el tamaño del texto */
+}
+
+.datos-punto a i { /* Estilo para el icono del enlace */
+    margin-right: 0.3rem;
+}
+
+.datos-punto a:hover { /* Estilo al pasar el ratón por encima */
+    text-decoration: underline; /* Subraya al pasar el ratón */
 }
 
 select {
-  width: 100%;
+  width: 100%;               
   padding: 0.6rem 2.5rem 0.6rem 0.75rem;
   font-size: 0.9rem;
   font-family: inherit;
@@ -124,7 +167,7 @@ select {
   background-color: #fff;
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
-  appearance: none;
+  appearance: none;          /* Remove default select arrow */
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
@@ -133,10 +176,10 @@ select {
   transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
 
-select:focus {
-  border-color: #86b7fe;
-  outline: 0;
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+select:focus { /* Subtle focus style */
+  border-color: #aaa;
+  outline: none;              
+  box-shadow: none;           
 }
 
 .popup-content {
@@ -151,4 +194,117 @@ select:focus {
     transform: scale(1.3);
     transform-origin: bottom center;
     filter: drop-shadow(0px 0px 5px rgba(0, 123, 255, 0.9));
+}
+
+.punto strong i {
+    margin-right: 0.5rem;
+    color: #555;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.9);
+}
+
+.modal-content {
+  margin: auto;
+  display: block;
+  max-width: 80%;
+  max-height: 80%;
+  object-fit: contain; /* Ensure the whole image is visible */
+}
+
+.close {
+  position: absolute;
+  top: 15px;
+  right: 35px;
+  color: #ccc;
+  font-size: 40px;
+  font-weight: bold;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+#map-layer-control {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  background: white;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+#map-layer-control label {
+  margin-right: 10px;
+}
+
+.sorting-options {
+    display: flex;
+    align-items: center;
+    margin-left: 20px; /* Add some spacing from other controls */
+}
+
+.sorting-options label {
+    margin-right: 5px;
+}
+
+.sorting-options select {
+    width: auto;
+}
+
+.sorting-options select#sort-direction { /* Specific style for direction dropdown */
+    margin-left: 5px;
+}
+
+/* Loading indicator styles */
+#loading-indicator {
+    display: none; /* Hidden by default */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1001; /* Ensure it's above the map */
+    background: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+#loading-indicator img {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 10px;
+}
+
+/* Estilos personalizados para los desplegables de los filtros */
+#filtros select {
+    background-color: #ffffff; /* Fondo oscuro */
+    color: #000000; /* Texto claro */
+    border: none;
+    border-radius: 5px; /* Bordes más redondeados */
+    padding: 0.7rem; /* Un poco más de espacio interno */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Transición suave */
+
+    /* Cambiamos el color de la flecha del desplegable a uno más claro */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ecf0f1' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+}
+
+#filtros select:hover {
+    border-color: #4e6a85; /* Un borde un poco más claro al pasar el ratón */
+}
+
+/* Estilo cuando el desplegable está seleccionado (en foco) */
+#filtros select:focus {
+    border-color: #3498db; /* Borde azul para destacar */
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5); /* Sombra para dar efecto de "brillo" */
+    outline: none; /* Quitamos el borde por defecto del navegador */
 }
