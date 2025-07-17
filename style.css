@@ -22,25 +22,31 @@ body {
 
 .titulo-principal {
     background-color: #000000; 
-    color: white;
+    color: white;  
     padding: 1.5rem 1rem;
     margin: -1rem -1rem 1.5rem -1rem; /* Usa márgenes negativos para que ocupe todo el ancho */
-    text-align: center;
+    text-align: right;
 }
 
 .titulo-principal h1 {
     margin: 0 0 0.5rem 0; 
-    font-size: 2rem;      
+    font-size: 4rem;      
     font-weight: 500;     
 }
 
 .titulo-principal span {
-    font-size: 0.9rem;     /* Reduced font size */
+    font-size: 2rem;    
     opacity: 0.8;
 }
 
+.titulo-principal .emoji-casco {
+    font-size: 2.5rem;
+    margin-top: 0.5rem;
+    line-height: 1; /* Para evitar espacio extra vertical */
+}
+
 #sidebar h2 {
-  font-size: 1.5rem;
+  font-size: 2rem;
   margin-top: 0;
   font-weight: bold;
   text-transform: uppercase;
@@ -48,12 +54,12 @@ body {
 }
 
 #reset-filters {
-    background-color: #f0f0f0; /* Light gray background */
-    color: #333;          /* Darker text color */
-    padding: 0.5rem 1rem;   /* Reduced padding */
-    border: 1px solid #ccc; /* Added a subtle border */
+    background-color: #f0f0f0; 
+    color: #333;         
+    padding: 0.5rem 1rem;   
+    border: 1px solid #ccc; 
     cursor: pointer;
-    font-size: 0.9rem;     /* Reduced font size */
+    font-size: 0.9rem;     
 }
 
 
@@ -65,8 +71,8 @@ body {
 #search-input {
     flex: 1;
     padding: 0.5rem;
-    border: 1px solid #ccc; /* Subtle border */
-    font-size: 0.9rem;     /* Reduced font size */
+    border: 1px solid #ccc; 
+    font-size: 0.9rem;    
 }
 
 #search-button {
@@ -113,7 +119,8 @@ body {
 /* Se resalta tanto al pasar el ratón por encima como al hacerlo sobre el marcador */
 #lista-puntos .punto:hover, .punto.punto-highlight {
     border-left-color: #000000; /* Cambia el color del borde al pasar el ratón */
-}
+    border-left-width: 2px;
+  }
 
 .imagen-placeholder {
     width: 100%;
