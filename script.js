@@ -91,6 +91,14 @@ defaultLayer = mapLayers["Satélite"];
 defaultLayer.addTo(mapa);
 mapLayerSelect.value = "Satélite";
 
+const brickIcon = L.divIcon({
+    html: '🧱',
+    className: 'emoji-icon',
+    iconSize: [30, 30],
+    iconAnchor: [15, 30], // El punto del icono que corresponderá a la ubicación del marcador
+    popupAnchor: [0, -35] // El punto desde donde se abrirá el popup, relativo al iconAnchor
+});
+
 const marcadores = [];
 
 function renderPuntuacion(huevos) {    
@@ -174,7 +182,7 @@ function cargarPuntos(filtroProvincia = 'todas', filtroTipo = 'todos', filtroTex
             <a href="${p.enlacePrensa}" target="_blank"><i class="bi bi-link-45deg"></i> Ver en prensa</a>
         </div>
     `;
-    const marker = L.marker([p.lat, p.lng]).addTo(mapa).bindPopup(popupContent);
+    const marker = L.marker([p.lat, p.lng], { icon: brickIcon }).addTo(mapa).bindPopup(popupContent);
     marcadores.push(marker);
 
     const div = document.createElement('div');
