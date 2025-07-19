@@ -1,15 +1,22 @@
 body {
       margin: 0;
       display: flex;
+      flex-direction: column; /* Apila el main-container y el footer verticalmente */
       height: 100vh;
       font-family: 'Roboto', sans-serif;
       background: white;
       color: black;
     }
 
+#main-container {
+  display: flex;
+  flex: 1; /* Hace que este contenedor ocupe todo el espacio vertical disponible */
+  overflow: hidden; /* Evita que el contenido interno cause un scroll en el body */
+}
+
 #map {
   width: 60%;
-  height: 100%;
+  position: relative; /* Necesario para posicionar elementos hijos absolutos como el toggle */
 }
 
 #sidebar {
@@ -411,31 +418,28 @@ select:focus { /* Subtle focus style */
   align-self: flex-end; /* Lo alineamos a la derecha dentro del contenedor de controles */
 }
 
-#sidebar footer {
+footer {
   background: #000;
   color: #fff;
-  padding: 0.8rem 1rem;
-  /* Usamos márgenes negativos para que ocupe todo el ancho del sidebar, ignorando el padding del padre */
-  margin: 1.5rem -1rem -1rem -1rem;
-  margin-top: auto; /* Esto es clave para empujar el footer al fondo */
+  padding: 0.7rem 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap; /* Para que se ajuste en pantallas pequeñas */
   gap: 1rem;
   font-size: 0.8rem;
+  z-index: 1001; /* Para que esté por encima del mapa en móvil */
 }
 
-#sidebar footer a {
+footer a {
   color: #fff;
   text-decoration: none;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  transition: color 0.2s ease;
 }
 
-#sidebar footer a:hover {
+footer a:hover {
   color: #ccc;
 }
 
@@ -456,14 +460,16 @@ select:focus { /* Subtle focus style */
 
 /* --- Media Query para Dispositivos Móviles --- */
 @media (max-width: 800px) {
-  body {
-    /* En móvil, la sidebar es absoluta, no necesitamos flexbox aquí */
-    display: block; 
+  #main-container {
+    /* En móvil, el contenedor principal sigue siendo flexible pero relativo para posicionar la sidebar */
+    flex-direction: column;
     position: relative;
   }
 
   #map {
+    /* El mapa ocupa todo el espacio del contenedor principal */
     width: 100%;
+    height: 100%;
   }
 
   #sidebar {
@@ -472,7 +478,7 @@ select:focus { /* Subtle focus style */
     left: 0;
     width: 85%; /* No ocupa todo el ancho para que se vea el mapa detrás */
     max-width: 350px; /* Un ancho máximo es buena práctica */
-    height: 100%;
+    height: 100%; /* Ocupa toda la altura del main-container */
     z-index: 2000; /* Por encima de todo excepto los modales */
     transform: translateX(-100%);
     transition: transform 0.3s ease-in-out;
