@@ -16,8 +16,17 @@ async function cargarDatosDesdeAirtable() {
     try {
         const response = await fetch(url);
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || `Error del servidor: ${response.statusText}`);
+            // Error handling mejorado: si la respuesta no es JSON, lo indicamos.
+            const contentType = response.headers.get("content-type");
+            let errorText;
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                const errorData = await response.json();
+                errorText = errorData.error || `Error del servidor: ${response.statusText}`;
+            } else {
+                // Esto suele ocurrir si la función serverless falla y Vercel devuelve una página de error HTML.
+                errorText = `Error inesperado del servidor (la respuesta no es JSON). Revisa los logs de la función en el panel de Vercel. (Status: ${response.status})`;
+            }
+            throw new Error(errorText);
         }
         const data = await response.json();
         // Transformamos los datos de Airtable a nuestro formato `puntos`
