@@ -52,13 +52,15 @@ async function cargarDatosDesdeAirtable() {
                 añoFin: record.fields.añoFin || null,
                 puntuacion: record.fields.puntuacion || 0,
                 imagenes: record.fields.imagen ? record.fields.imagen.map(img => img.url) : [],
-                ubicacion: record.fields.ubicacion || ''
+                ubicacion: record.fields.ubicacion || '',
+                estado: record.fields.estado || 'No especificado' // Añadimos el nuevo campo
             };
         });
 
         // Una vez cargados los datos, inicializamos la web
         poblarSelectorProvincias();
         poblarSelectorTipos();
+        poblarSelectorEstado(); // Poblamos el nuevo selector
         cargarPuntos();
 
     } catch (error) {
@@ -95,6 +97,7 @@ function cargarPuntos() {
     const filtroTipo = document.getElementById('tipo-select').value;
     const filtroTexto = document.getElementById('search-input').value;
     const filtroPuntuacion = document.getElementById('puntuacion-select').value;
+    const filtroEstado = document.getElementById('estado-select').value;
     const sortBy = document.getElementById('sort-by').value;
     const sortDirection = document.getElementById('sort-direction').value;
 
@@ -117,6 +120,10 @@ function cargarPuntos() {
 
     if (filtroPuntuacion !== 'todos') {
         puntosFiltrados = puntosFiltrados.filter(p => p.puntuacion === parseInt(filtroPuntuacion));
+    }
+
+    if (filtroEstado !== 'todos') {
+        puntosFiltrados = puntosFiltrados.filter(p => p.estado === filtroEstado);
     }
 
     // Apply sorting
@@ -185,6 +192,9 @@ function cargarPuntos() {
         thumbnailsHTML = '<div class="imagen-placeholder"><span>Sin imágenes</span></div>';
     }
 
+    // Obtenemos la información del estado para mostrarla con icono y color
+    const { texto, icono, claseCss } = getEstadoInfo(p.estado);
+
     div.innerHTML = `        
         <strong>${p.nombre}</strong>
         <div class="ubicacion-linea">
@@ -199,6 +209,7 @@ function cargarPuntos() {
             <strong><i class="bi bi-cash-coin"></i> Presupuesto final:</strong> <span style="${estiloPresupuestoFinal}">€${p.presupuestoFinal.toLocaleString()}</span>${textoDesviacion}<br>
             <strong>Arquitecto:</strong> ${p.arquitecto}<br>
             ${textoObras}
+            <div class="estado-linea ${claseCss}"><strong><i class="bi ${icono}"></i> Estado:</strong> ${texto}</div>
             <strong>Pormishuevismo:</strong> ${renderPuntuacion(p.puntuacion)}<br>
             <strong><i class="bi bi-geo-alt"></i> Coordenadas:</strong> ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}<br>
         </div>
@@ -270,6 +281,39 @@ function poblarSelectorTipos() {
     });
 }
 
+function poblarSelectorEstado() {
+    const estadosUnicos = [...new Set(puntos.map(p => p.estado).filter(e => e && e !== 'No especificado'))];
+    const select = document.getElementById('estado-select');
+    estadosUnicos.sort().forEach(estado => {
+        const opt = document.createElement('option');
+        opt.value = estado;
+        opt.textContent = estado;
+        select.appendChild(opt);
+    });
+}
+
+/**
+ * Devuelve el texto, icono y clase CSS para un estado determinado.
+ * @param {string} estado - El estado de la obra.
+ * @returns {{texto: string, icono: string, claseCss: string}}
+ */
+function getEstadoInfo(estado) {
+    switch (estado) {
+        case 'En construccion':
+            return { texto: 'En construcción', icono: 'bi-cone-striped', claseCss: 'estado-en-construccion' };
+        case 'Finalizado':
+            return { texto: 'Finalizado', icono: 'bi-check-circle-fill', claseCss: 'estado-finalizado' };
+        case 'Paralizado':
+            return { texto: 'Paralizado', icono: 'bi-pause-circle-fill', claseCss: 'estado-paralizado' };
+        case 'No especificado':
+            return { texto: 'No especificado', icono: 'bi-question-circle', claseCss: 'estado-no-especificado' };
+        default:
+            // Si hay algún otro estado no contemplado, lo mostramos tal cual
+            return { texto: estado, icono: 'bi-question-circle', claseCss: 'estado-no-especificado' };
+    }
+}
+
+
 document.addEventListener('DOMContentLoaded', async () => {
     // Elementos del Modal
     modal = document.getElementById("image-modal");
@@ -313,6 +357,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('provincia-select').addEventListener('change', cargarPuntos);
     document.getElementById('tipo-select').addEventListener('change', cargarPuntos);
     document.getElementById('puntuacion-select').addEventListener('change', cargarPuntos);
+    document.getElementById('estado-select').addEventListener('change', cargarPuntos);
     document.getElementById('search-button').addEventListener('click', cargarPuntos);
     document.getElementById('sort-by').addEventListener('change', cargarPuntos);
     document.getElementById('sort-direction').addEventListener('change', cargarPuntos);
@@ -338,6 +383,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('provincia-select').value = 'todas';
         document.getElementById('tipo-select').value = 'todos';
         document.getElementById('puntuacion-select').value = 'todos';
+        document.getElementById('estado-select').value = 'todos';
         document.getElementById('search-input').value = '';
         cargarPuntos();
     });
