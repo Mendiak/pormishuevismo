@@ -64,36 +64,62 @@ body {
   letter-spacing: 0.05em;
 }
 
-#reset-filters {
-    background-color: #f0f0f0; 
-    color: #333;         
-    padding: 0.5rem 1rem;   
-    border: 1px solid #ccc; 
-    cursor: pointer;
-    font-size: 0.9rem;     
+.controles-wrapper {
+  background: #e9e9e9;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
+.fila-controles-superior {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem; /* Aumentamos el espacio entre búsqueda y ordenación */
+  flex-wrap: wrap; /* Permite que se apilen en pantallas muy pequeñas */
+}
 
-#search-bar {
-    display: flex;
-    margin-bottom: 1rem;
+.busqueda-wrapper {
+  display: flex;
+  flex-grow: 1; /* Hace que la barra de búsqueda ocupe el espacio disponible */
+}
+
+.busqueda-wrapper input {
+  border-radius: 6px 0 0 6px;
+}
+
+.busqueda-wrapper button {
+  border-radius: 0;
+  border-left: none;
+  padding: 0.5rem 0.8rem;
+}
+
+.busqueda-wrapper button:last-child {
+  border-radius: 0 6px 6px 0;
 }
 
 #search-input {
     flex: 1;
     padding: 0.5rem;
     border: 1px solid #ccc; 
-    font-size: 0.9rem;    
+    font-size: 0.9rem;
+    min-width: 0; /* Fix for flexbox overflow */
 }
 
-#search-button {
-    padding: 0.5rem;
-    border: 1px solid #ccc; /* Subtle border */
-    border-left: none;
-    background-color: #f0f0f0; /* Light gray background */
-    cursor: pointer;
+#search-button, #reset-filters {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  color: #333;
+  font-size: 1rem; /* Icon size */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-
 
 #filtros { /* Reduced gap between filter elements */
   display: flex;
@@ -306,13 +332,23 @@ select:focus { /* Subtle focus style */
     z-index: 1001; /* Ensure it's above the map */
     background: rgba(255, 255, 255, 0.8);
     padding: 20px;
+    border-radius: 8px;
     text-align: center;
 }
 
-#loading-indicator img {
-    width: 50px;
-    height: 50px;
-    margin-bottom: 10px;
+.loader {
+  margin: 0 auto 15px auto;
+  border: 6px solid #e0e0e0; /* Gris claro */
+  border-top: 6px solid #333; /* Gris oscuro para que coincida con el tema */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* Estilos personalizados para los desplegables de los filtros */
@@ -334,14 +370,6 @@ select:focus { /* Subtle focus style */
     outline: none; 
 }
 
-.controls {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
 .leyenda-mapa {
   padding: 0.75rem;
   margin-bottom: 1rem;
@@ -355,4 +383,10 @@ select:focus { /* Subtle focus style */
 .leyenda-mapa i {
   margin-right: 0.5rem;
   margin-bottom: 1rem;
+}
+
+.conteo-resultados {
+  font-size: 0.9rem;
+  color: #555;
+  align-self: flex-end; /* Lo alineamos a la derecha dentro del contenedor de controles */
 }

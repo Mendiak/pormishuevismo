@@ -13,7 +13,9 @@
   <link rel="icon" href="assets/images/casco.png?v=2" type="image/png">
 </head>
 <body>
-  <div id="map"></div>
+  <div id="map">
+    <div id="map-layer-control"><label for="map-layer-select">Estilo:</label><select id="map-layer-select"></select></div>
+  </div>
   <div id="sidebar">
     <div class="titulo-principal">
       <h1>PORMISHUEVISMO</h1>
@@ -21,56 +23,47 @@
       <div class="casco"><img src="assets/images/casco.png" alt="Icono de casco de obra"></div>
     </div>
       <div class="sidebar-content">
-        <div id="filtros">
-          <div class="filtro">
-            <label for="provincia-select" title="Selecciona para filtrar por provincia">Provincia:</label>
-            <select id="provincia-select" title="Selecciona para filtrar por provincia">
-              <option value="todas">Todas</option>
-            </select>
+        <div class="controles-wrapper">
+          <!-- Búsqueda y reinicio -->
+          <div class="fila-controles-superior">
+            <div class="busqueda-wrapper">
+              <input type="text" id="search-input" placeholder="Buscar por nombre, descripción..." aria-label="Buscar puntos por nombre o descripción">
+              <button id="search-button" title="Buscar"><i class="bi bi-search"></i></button>
+              <button id="reset-filters" title="Reiniciar filtros"><i class="bi bi-arrow-clockwise"></i></button>
+            </div>
+            <div class="sorting-options"><label for="sort-by">Ordenar:</label><select id="sort-by"><option value="nombre">Nombre</option><option value="puntuacion">Puntuación</option><option value="presupuestoFinal">Coste Final</option><option value="provincia">Provincia</option></select><select id="sort-direction"><option value="asc">Asc</option><option value="desc">Desc</option></select></div>
           </div>
-          <div class="filtro">
-            <label for="tipo-select" title="Selecciona para filtrar por tipo de construcción">Tipo:</label>
-            <select id="tipo-select">
-              <option value="todos">Todos</option>
-            </select>
-          </div>
-          <div class="filtro">
-            <label for="puntuacion-select" title="Selecciona para filtrar por puntuación">Puntuación:</label>
-            <select id="puntuacion-select" title="Selecciona para filtrar por puntuación">
-              <option value="todos">Todas</option>
-              <option value="1">1 🥚</option>
-              <option value="2">2 🥚🥚</option>
-              <option value="3">3 🥚🥚🥚</option>
-              <option value="4">4 🥚🥚🥚🥚</option>
-              <option value="5">5 🥚🥚🥚🥚🥚</option>
-            </select>
-          </div>
-        </div>
-        <div class="controls">
 
-          <span>Nº de elementos mostrados: <span id="conteo-puntos"></span></span>
-          <div id="map-layer-control"><label for="map-layer-select">Estilo:</label><select id="map-layer-select"></select></div>
-          <div class="sorting-options">
-            <label for="sort-by">Ordenar por:</label>
-            <select id="sort-by">
-              <option value="nombre">Nombre</option>
-              <option value="puntuacion">Puntuación</option>
-              <option value="presupuestoFinal">Coste Final</option>
-              <option value="provincia">Provincia</option>
-            </select>
-            <select id="sort-direction">
-              <option value="asc">Ascendente</option>
-              <option value="desc">Descendente</option>
-            </select>
+          <!-- Filtros -->
+          <div id="filtros">
+            <div class="filtro">
+              <label for="provincia-select">Provincia:</label>
+              <select id="provincia-select" title="Filtrar por provincia">
+                <option value="todas">Todas</option>
+              </select>
+            </div>
+            <div class="filtro">
+              <label for="tipo-select">Tipo:</label>
+              <select id="tipo-select" title="Filtrar por tipo">
+                <option value="todos">Todos</option>
+              </select>
+            </div>
+            <div class="filtro">
+              <label for="puntuacion-select">Puntuación:</label>
+              <select id="puntuacion-select" title="Filtrar por puntuación">
+                <option value="todos">Todas</option>
+                <option value="1">1 🥚</option>
+                <option value="2">2 🥚🥚</option>
+                <option value="3">3 🥚🥚🥚</option>
+                <option value="4">4 🥚🥚🥚🥚</option>
+                <option value="5">5 🥚🥚🥚🥚🥚</option>
+              </select>
+            </div>
           </div>
+          <!-- Conteo de resultados -->
+          <span class="conteo-resultados">Mostrando: <strong id="conteo-puntos"></strong></span>
         </div>
       </div>
-
-    <div id="search-bar">
-        <input type="text" id="search-input" placeholder="Buscar por nombre o descripción..." aria-label="Buscar puntos por nombre o descripción">
-        <button id="search-button"><i class="bi bi-search"></i></button>
-        <button id="reset-filters">Reiniciar filtros</button>
-    </div>
     <div class="leyenda-mapa">
       <i class="bi bi-info-circle"></i> Haz clic en un proyecto para verlo en el mapa
     </div>
@@ -81,7 +74,7 @@
 
   <!-- Loading indicator -->
   <div id="loading-indicator">
-      <img src="https://i.stack.imgur.com/hzk6C.gif" alt="Cargando...">
+      <div class="loader"></div>
       <p>Cargando datos del mapa...</p>
   </div>
   <div id="image-modal" class="modal">
