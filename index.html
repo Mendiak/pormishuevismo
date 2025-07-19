@@ -17,7 +17,7 @@
     <div class="titulo-principal">
       <h1>PORMISHUEVISMO</h1>
       <span>Mapa de un movimiento artístico</span>
-      <div class="emoji-casco">👷</div>
+      <div class="casco"><img src="assets/images/casco.png" alt="Icono de casco de obra"></div>
     </div>
       <div class="sidebar-content">
         <div id="filtros">
@@ -31,16 +31,6 @@
             <label for="tipo-select" title="Selecciona para filtrar por tipo de construcción">Tipo:</label>
             <select id="tipo-select">
               <option value="todos">Todos</option>
-              <option value="rotonda">Rotonda</option>
-              <option value="pabellon">Pabellón deportivo</option>
-              <option value="urbanizacion">Urbanización</option>
-              <option value="auditorio">Auditorio</option>
-              <option value="museo">Centro de arte / Museo</option>
-              <option value="parking">Parking</option>
-              <option value="aeropuerto">Aeropuerto</option>
-              <option value="puerto">Puerto</option>
-              <option value="campo de golf">Campo de Golf</option>
-              <option value="alojamiento turistico">Alojamiento Turístico</option>
             </select>
           </div>
           <div class="filtro">
@@ -79,6 +69,9 @@
         <input type="text" id="search-input" placeholder="Buscar por nombre o descripción..." aria-label="Buscar puntos por nombre o descripción">
         <button id="search-button"><i class="bi bi-search"></i></button>
         <button id="reset-filters">Reiniciar filtros</button>
+    </div>
+    <div class="leyenda-mapa">
+      <i class="bi bi-info-circle"></i> Haz clic en un proyecto para verlo en el mapa
     </div>
     <div id="lista-puntos">
     </div>

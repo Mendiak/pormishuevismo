@@ -1,95 +1,64 @@
-const puntos = [
-    {
-    id: 1,
-    nombre: "Puente de Zubizuri",
-    provincia: "Bilbao",
-    tipo: "puente",
-    lat: 40.3,
-    lng: -3.7,
-    descripcion: "Callejeros asfaltados pero sin casas construidas.",
-    presupuestoInicial: 2000000,
-    presupuestoFinal: 5500000,
-    arquitecto: "Estudio XYZ",
-    añoInicio: 2006,
-    añoFin: 2011,
-    puntuacion: 4,
-    imagen: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjjXVgnHHQcukUz1ekWR9DP0mlOfgw46yYHXU5bSD8vHlkyaKXgnEPxVHcpps5d_r7KeJJutlvoqQRIlikdQ0AQm4uQU5svqBykZxDvePNLCA4lCZja4xggE6Y4b8DNYUVQy-3ZD1Pe4mY/s1600/Puente+Zubiri+cristal.jpg",
-    enlacePrensa: "https://www.ejemplo.com/noticia1"
-    },
-    {
-    id: 2,
-    nombre: "Urbanizacion de Valdecañas",
-    provincia: "Extremadura",
-    tipo: "pabellon",
-    lat: 39.5,
-    lng: -0.4,
-    descripcion: "Piscina municipal en una zona sin carreteras.",
-    presupuestoInicial: 800000,
-    presupuestoFinal: 1400000,
-    arquitecto: "Arquitectos del Levante",
-    añoInicio: 2010,
-    añoFin: 2013,
-    puntuacion: 5,
-    imagen: "https://www.eldebate.com/files/article_social/files/fp/uploads/2022/11/14/63728716e91b0.r_d.675-195-0.jpeg",
-    enlacePrensa: "https://www.ejemplo.com/noticia2"
-    },
-    {
-    id: 3,
-    nombre: "Polígono sin empresas",
-    provincia: "Soria",
-    tipo: "urbanizacion",
-    lat: 41.7,
-    lng: -2.5,
-    descripcion: "Naves industriales construidas, pero sin actividad ni servicios.",
-    presupuestoInicial: 1200000,
-    presupuestoFinal: 1200000,
-    arquitecto: "Ingeniería Castella",
-    añoInicio: 2008,
-    añoFin: 2009,
-    puntuacion: 3,
-    imagen: "https://images.ecestaticos.com/Nh8DxCrKNTpIXVaHJw2fjf6THF0=/311x0:2169x1393/1200x899/filters:fill(white):format(jpg)/f.elconfidencial.com%2Foriginal%2F49f%2Fa85%2F39d%2F49fa8539d58cdb05273999b7c7d3e357.jpg",
-    enlacePrensa: "https://www.ejemplo.com/noticia3",
-    ubicacion: "Cerca del pueblo de Medinaceli"
-    }
-];
+let puntos = []; // Lo dejamos vacío, se llenará desde Airtable
 
 const mapa = L.map('map').setView([40.2, -3.5], 6);
 
 let modal, modalImg, closeBtn;
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Modal elements
-    modal = document.getElementById("image-modal");
-    modalImg = document.getElementById("modal-image");
-    closeBtn = document.querySelector("#image-modal .close");
+const marcadores = [];
 
-const mapLayers = {
-    "Predeterminado": L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors',
-        maxZoom: 19
-    }),
-    "Calles": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors',
-        maxZoom: 19
-    }),
-    "Satélite": L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-        maxZoom: 19
-    })
-};
+// --- FUNCIONES PRINCIPALES ---
 
-const mapLayerSelect = document.getElementById("map-layer-select");
-let defaultLayer;
-for (const layerName in mapLayers) {
-    const option = document.createElement("option");
-    option.value = layerName;
-    option.text = layerName;
-    mapLayerSelect.appendChild(option);    
+async function cargarDatosDesdeAirtable() {
+    showLoadingIndicator();
+    // Ahora llamamos a nuestra propia API segura, que se encuentra en /api/get-data
+    const url = '/api/get-data';
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `Error del servidor: ${response.statusText}`);
+        }
+        const data = await response.json();
+        // Transformamos los datos de Airtable a nuestro formato `puntos`
+        puntos = data.records.map(record => {
+            // Parsear coordenadas desde un único campo de texto "lat, lng"
+            const coordsString = record.fields.coordenadas || '';
+            const coordsParts = coordsString.split(',');
+            const lat = coordsParts.length === 2 ? parseFloat(coordsParts[0].trim()) || 0 : 0;
+            const lng = coordsParts.length === 2 ? parseFloat(coordsParts[1].trim()) || 0 : 0;
+
+            return {
+                id: record.fields.id || `gen_${Math.random()}`,
+                nombre: record.fields.nombre || 'Registro sin nombre',
+                provincia: record.fields.provincia || 'Sin provincia',
+                tipo: record.fields.tipo,
+                lat, // Usamos la latitud parseada
+                lng, // Usamos la longitud parseada
+                descripcion: record.fields.descripcion || '',
+                presupuestoInicial: record.fields.presupuestoInicial || 0,
+                presupuestoFinal: record.fields.presupuestoFinal || 0,
+                arquitecto: record.fields.arquitecto || 'Desconocido',
+                añoInicio: record.fields.añoInicio || null,
+                añoFin: record.fields.añoFin || null,
+                puntuacion: record.fields.puntuacion || 0,
+                imagenes: record.fields.imagen ? record.fields.imagen.map(img => img.url) : [],
+                ubicacion: record.fields.ubicacion || ''
+            };
+        });
+
+        // Una vez cargados los datos, inicializamos la web
+        poblarSelectorProvincias();
+        poblarSelectorTipos();
+        cargarPuntos();
+
+    } catch (error) {
+        console.error("No se pudieron cargar los datos desde Airtable:", error);
+        document.getElementById('lista-puntos').innerHTML = `<p style="color: red; text-align: center;">${error.message}</p>`;
+    } finally {
+        hideLoadingIndicator();
+    }
 }
-
-defaultLayer = mapLayers["Satélite"];
-defaultLayer.addTo(mapa);
-mapLayerSelect.value = "Satélite";
 
 const brickIcon = L.divIcon({
     html: '🧱',
@@ -98,8 +67,6 @@ const brickIcon = L.divIcon({
     iconAnchor: [15, 30], // El punto del icono que corresponderá a la ubicación del marcador
     popupAnchor: [0, -35] // El punto desde donde se abrirá el popup, relativo al iconAnchor
 });
-
-const marcadores = [];
 
 function renderPuntuacion(huevos) {    
     return '🥚'.repeat(huevos);
@@ -113,14 +80,17 @@ function hideLoadingIndicator() {
     document.getElementById('loading-indicator').style.display = 'none';
 }
 
-function cargarPuntos(filtroProvincia = 'todas', filtroTipo = 'todos', filtroTexto = '') {
-    document.getElementById('lista-puntos').innerHTML = '';
-    const sortBy = document.getElementById('sort-by').value; // Get the selected sorting criteria
-    const sortDirection = document.getElementById('sort-direction').value; // Get the selected sorting direction
-
-    marcadores.forEach(m => mapa.removeLayer(m));
-
+function cargarPuntos() {
+    // Leer todos los valores de los filtros y ordenación desde el DOM
+    const filtroProvincia = document.getElementById('provincia-select').value;
+    const filtroTipo = document.getElementById('tipo-select').value;
+    const filtroTexto = document.getElementById('search-input').value;
     const filtroPuntuacion = document.getElementById('puntuacion-select').value;
+    const sortBy = document.getElementById('sort-by').value;
+    const sortDirection = document.getElementById('sort-direction').value;
+
+    document.getElementById('lista-puntos').innerHTML = '';
+    marcadores.forEach(m => mapa.removeLayer(m));
     showLoadingIndicator();
 
     let puntosFiltrados = puntos;
@@ -144,13 +114,13 @@ function cargarPuntos(filtroProvincia = 'todas', filtroTipo = 'todos', filtroTex
     puntosFiltrados.sort((a, b) => {
         let comparison = 0;
         if (sortBy === 'nombre') {
-            comparison = a.nombre.localeCompare(b.nombre);
+            comparison = (a.nombre || '').localeCompare(b.nombre || '');
         } else if (sortBy === 'puntuacion') {
-            comparison = a.puntuacion - b.puntuacion; // Sort ascending initially
+            comparison = (a.puntuacion || 0) - (b.puntuacion || 0); // Sort ascending initially
         } else if (sortBy === 'presupuestoFinal') {
-            comparison = a.presupuestoFinal - b.presupuestoFinal;
+            comparison = (a.presupuestoFinal || 0) - (b.presupuestoFinal || 0);
         } else if (sortBy === 'provincia') {
-            comparison = a.provincia.localeCompare(b.provincia);
+            comparison = (a.provincia || '').localeCompare(b.provincia || '');
         }
 
         // Adjust direction
@@ -167,19 +137,25 @@ function cargarPuntos(filtroProvincia = 'todas', filtroTipo = 'todos', filtroTex
     const estiloPresupuestoFinal = sobrecoste ? 'color: red; font-weight: bold;' : '';
     const textoDesviacion = sobrecoste ? ` (<em>+${desviacion.toFixed(0)}%</em>)` : '';
 
+    // Crear el texto del periodo de obras de forma segura
+    let textoObras = '';
+    if (p.añoInicio) {
+        const fin = p.añoFin ? p.añoFin : 'Actualidad';
+        textoObras = `<strong>Obras:</strong> ${p.añoInicio} - ${fin}<br>`;
+    }
+
     const popupContent = `
         <div class="popup-content">
             <strong>${p.nombre}</strong><br>
             ${p.descripcion}<br><br>
-            <div class="imagen-placeholder"><img src="${p.imagen}" alt="Imagen de ${p.nombre}" width="100%"></div><br>
+            <div class="imagen-placeholder"><img src="${p.imagenes.length > 0 ? p.imagenes[0] : 'https://via.placeholder.com/300'}" alt="Imagen de ${p.nombre}" width="100%"></div><br>
             <strong>Presupuesto inicial:</strong> €${p.presupuestoInicial.toLocaleString()}<br>
             <strong>Presupuesto final:</strong> <span style="${estiloPresupuestoFinal}">€${p.presupuestoFinal.toLocaleString()}</span>${textoDesviacion}<br>
             <strong>Arquitecto:</strong> ${p.arquitecto}<br>
-            <strong>Obras:</strong> ${p.añoInicio} - ${p.añoFin}<br>
+            ${textoObras}
             <strong>Pormishuevismo:</strong> ${renderPuntuacion(p.puntuacion)}<br>
             <strong>Coordenadas:</strong> ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}<br>
             ${p.ubicacion ? `<strong>Ubicación:</strong> ${p.ubicacion}<br>` : ''}
-            <a href="${p.enlacePrensa}" target="_blank"><i class="bi bi-link-45deg"></i> Ver en prensa</a>
         </div>
     `;
     const marker = L.marker([p.lat, p.lng], { icon: brickIcon }).addTo(mapa).bindPopup(popupContent);
@@ -189,32 +165,49 @@ function cargarPuntos(filtroProvincia = 'todas', filtroTipo = 'todos', filtroTex
     div.className = 'punto';
     div.id = `punto-${p.id}`;
 
-    // Icons based on the type of location
+    // Generar HTML para las miniaturas de las imágenes
+    let thumbnailsHTML = '';
+    if (p.imagenes && p.imagenes.length > 0) {
+        const imageElements = p.imagenes.slice(0, 3).map(url => 
+            `<img src="${url}" alt="Miniatura de ${p.nombre}" class="thumbnail-img">`
+        ).join('');
+        thumbnailsHTML = `<div class="thumbnails-container">${imageElements}</div>`;
+    } else {
+        thumbnailsHTML = '<div class="imagen-placeholder"><span>Sin imágenes</span></div>';
+    }
+
     div.innerHTML = `        
-        <strong>${p.nombre}</strong><br>
-        <div class="imagen-placeholder"><img src="${p.imagen}" alt="Imagen de ${p.nombre}" width="100%"></div>
+        <strong>${p.nombre}</strong>
+        <div class="ubicacion-linea">
+            ${p.ubicacion ? 
+                `<span>${p.ubicacion}</span> <span class="ubicacion-detalle">(${p.provincia})</span>` : 
+                `<span>${p.provincia}</span>`
+            }
+        </div>
+        ${thumbnailsHTML}
         <div class="datos-punto">
             <strong><i class="bi bi-cash-coin"></i> Presupuesto inicial:</strong> €${p.presupuestoInicial.toLocaleString()}<br>
             <strong><i class="bi bi-cash-coin"></i> Presupuesto final:</strong> <span style="${estiloPresupuestoFinal}">€${p.presupuestoFinal.toLocaleString()}</span>${textoDesviacion}<br>
             <strong>Arquitecto:</strong> ${p.arquitecto}<br>
-            <strong>Provincia:</strong> ${p.provincia}<br>
-            <strong>Obras:</strong> ${p.añoInicio} - ${p.añoFin}<br>
+            ${textoObras}
             <strong>Pormishuevismo:</strong> ${renderPuntuacion(p.puntuacion)}<br>
             <strong><i class="bi bi-geo-alt"></i> Coordenadas:</strong> ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}<br>
-            ${p.ubicacion ? `<strong>Ubicación:</strong> ${p.ubicacion}<br>` : ''}
-            <a href="${p.enlacePrensa}" target="_blank"><i class="bi bi-newspaper"></i> Ver en prensa</a>            
         </div>
     `;
 
     div.addEventListener('click', () => {
-        mapa.setView([p.lat, p.lng], 15);
+        mapa.flyTo([p.lat, p.lng], 15);
         marker.openPopup();
     });
 
-    const imagen = div.querySelector('.imagen-placeholder img');
-    imagen.addEventListener('click', () => {
-        modalImg.src = p.imagen;
-        modal.style.display = "block";
+    // Añadir listeners a las miniaturas para abrir el modal
+    const thumbnailImages = div.querySelectorAll('.thumbnail-img');
+    thumbnailImages.forEach((img, index) => {
+        img.addEventListener('click', (e) => {
+            e.stopPropagation(); // Evita que se dispare el evento click del contenedor .punto
+            modalImg.src = p.imagenes[index]; // Usa la URL original de la imagen clickada
+            modal.style.display = "flex"; // Cambiado a flex para que el centrado de CSS funcione
+        });
     });
 
     div.addEventListener('mouseover', () => {
@@ -256,58 +249,91 @@ function poblarSelectorProvincias() {
     });
 }
 
-function performSearch() {
-    cargarPuntos(
-        document.getElementById('provincia-select').value,
-        document.getElementById('tipo-select').value,
-        document.getElementById('search-input').value
-    );
+function poblarSelectorTipos() {
+    const tiposUnicos = [...new Set(puntos.map(p => p.tipo).filter(t => t))]; // Filtra tipos nulos o vacíos
+    const select = document.getElementById('tipo-select');
+    tiposUnicos.sort().forEach(tipo => {
+        const opt = document.createElement('option');
+        opt.value = tipo;
+        // Capitaliza la primera letra para una mejor presentación
+        opt.textContent = tipo.charAt(0).toUpperCase() + tipo.slice(1);
+        select.appendChild(opt);
+    });
 }
 
-document.getElementById('provincia-select').addEventListener('change', e => {
-    performSearch();
-});
-document.getElementById('tipo-select').addEventListener('change', e => {
-    cargarPuntos(document.getElementById('provincia-select').value, e.target.value, document.getElementById('search-input').value);
-});
+document.addEventListener('DOMContentLoaded', async () => {
+    // Elementos del Modal
+    modal = document.getElementById("image-modal");
+    modalImg = document.getElementById("modal-image");
+    closeBtn = document.querySelector("#image-modal .close");
 
-document.getElementById('search-button').addEventListener('click', () => {
-    cargarPuntos(document.getElementById('provincia-select').value, document.getElementById('tipo-select').value, document.getElementById('search-input').value);
-});
+    // Configuración de capas del mapa
+    const mapLayers = {
+        "Predeterminado": L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors', maxZoom: 19 }),
+        "Calles": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors', maxZoom: 19 }),
+        "Satélite": L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles &copy; Esri', maxZoom: 19 })
+    };
 
-document.getElementById('search-input').addEventListener('keyup', (event) => {
-    if (event.key === 'Enter') {
-        cargarPuntos(document.getElementById('provincia-select').value, document.getElementById('tipo-select').value, document.getElementById('search-input').value);
-    }
-});
-
-poblarSelectorProvincias();
-cargarPuntos();
-document.getElementById('puntuacion-select').addEventListener('change', e => {
-    cargarPuntos(document.getElementById('provincia-select').value, document.getElementById('tipo-select').value, document.getElementById('search-input').value);
-});
-
-mapLayerSelect.addEventListener("change", function() {
-    const selectedLayerName = this.value;
+    const mapLayerSelect = document.getElementById("map-layer-select");
     for (const layerName in mapLayers) {
-        if (layerName === selectedLayerName) {
-            mapLayers[layerName].addTo(mapa);
-        } else {
-            mapLayers[layerName].remove();
-        }
+        const option = document.createElement("option");
+        option.value = layerName;
+        option.text = layerName;
+        mapLayerSelect.appendChild(option);    
     }
-});
 
-document.getElementById('reset-filters').addEventListener('click', () => {
-    document.getElementById('provincia-select').value = 'todas';
-    document.getElementById('tipo-select').value = 'todos';
-    document.getElementById('puntuacion-select').value = 'todos';
-    document.getElementById('search-input').value = '';
-    cargarPuntos();
-});
+    // Establecer capa por defecto
+    mapLayers["Satélite"].addTo(mapa);
+    mapLayerSelect.value = "Satélite";
 
-document.getElementById('sort-by').addEventListener('change', () => {
-    cargarPuntos(document.getElementById('provincia-select').value, document.getElementById('tipo-select').value, document.getElementById('search-input').value);
-});
+    // --- Event Listeners ---
+
+    // Listeners para cerrar el modal
+    closeBtn.addEventListener('click', () => {
+        modal.style.display = "none";
+    });
+
+    // Cierra el modal si se hace clic en el fondo oscuro
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.style.display = "none";
+        }
+    });
+
+    // Unificar todos los listeners para que llamen a la misma función
+    document.getElementById('provincia-select').addEventListener('change', cargarPuntos);
+    document.getElementById('tipo-select').addEventListener('change', cargarPuntos);
+    document.getElementById('puntuacion-select').addEventListener('change', cargarPuntos);
+    document.getElementById('search-button').addEventListener('click', cargarPuntos);
+    document.getElementById('sort-by').addEventListener('change', cargarPuntos);
+    document.getElementById('sort-direction').addEventListener('change', cargarPuntos);
+
+    document.getElementById('search-input').addEventListener('keyup', (event) => {
+        if (event.key === 'Enter') {
+            cargarPuntos();
+        }
+    });
+
+    mapLayerSelect.addEventListener("change", function() {
+        const selectedLayerName = this.value;
+        for (const layerName in mapLayers) {
+            if (layerName === selectedLayerName) {
+                mapLayers[layerName].addTo(mapa);
+            } else {
+                mapLayers[layerName].remove();
+            }
+        }
+    });
+
+    document.getElementById('reset-filters').addEventListener('click', () => {
+        document.getElementById('provincia-select').value = 'todas';
+        document.getElementById('tipo-select').value = 'todos';
+        document.getElementById('puntuacion-select').value = 'todos';
+        document.getElementById('search-input').value = '';
+        cargarPuntos();
+    });
+
+    // Carga inicial de datos
+    await cargarDatosDesdeAirtable(); 
 
 });
