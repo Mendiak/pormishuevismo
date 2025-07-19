@@ -218,6 +218,10 @@ function cargarPuntos() {
     div.addEventListener('click', () => {
         mapa.flyTo([p.lat, p.lng], 15);
         marker.openPopup();
+        // En móvil, oculta la sidebar al hacer clic en un punto para ver el mapa
+        if (window.innerWidth <= 800) {
+            document.getElementById('sidebar').classList.remove('sidebar-visible');
+        }
     });
 
     // Añadir listeners a las miniaturas para abrir el modal
@@ -319,6 +323,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     modal = document.getElementById("image-modal");
     modalImg = document.getElementById("modal-image");
     closeBtn = document.querySelector("#image-modal .close");
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('sidebar-toggle');
 
     // Configuración de capas del mapa
     const mapLayers = {
@@ -340,6 +346,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     mapLayerSelect.value = "Satélite";
 
     // --- Event Listeners ---
+
+    // Listener para el botón de menú en móvil
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Evita que el clic se propague al mapa
+            sidebar.classList.toggle('sidebar-visible');
+        });
+    }
+
+    // Cierra la sidebar si se hace clic en el mapa (útil en móvil)
+    mapa.on('click', () => {
+        sidebar.classList.remove('sidebar-visible');
+    });
 
     // Listeners para cerrar el modal
     closeBtn.addEventListener('click', () => {

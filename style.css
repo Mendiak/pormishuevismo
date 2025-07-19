@@ -438,3 +438,52 @@ select:focus { /* Subtle focus style */
 #sidebar footer a:hover {
   color: #ccc;
 }
+
+.sidebar-toggle-btn {
+  display: none; /* Oculto por defecto en escritorio */
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1000; /* Por encima de las capas del mapa */
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 1.5rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* --- Media Query para Dispositivos Móviles --- */
+@media (max-width: 800px) {
+  body {
+    /* En móvil, la sidebar es absoluta, no necesitamos flexbox aquí */
+    display: block; 
+    position: relative;
+  }
+
+  #map {
+    width: 100%;
+  }
+
+  #sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 85%; /* No ocupa todo el ancho para que se vea el mapa detrás */
+    max-width: 350px; /* Un ancho máximo es buena práctica */
+    height: 100%;
+    z-index: 2000; /* Por encima de todo excepto los modales */
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+    box-shadow: 3px 0 15px rgba(0,0,0,0.2);
+  }
+
+  #sidebar.sidebar-visible {
+    transform: translateX(0);
+  }
+
+  .sidebar-toggle-btn {
+    display: block; /* Mostramos el botón en móvil */
+  }
+}
