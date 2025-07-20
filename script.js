@@ -1,6 +1,11 @@
 let puntos = []; // Lo dejamos vacío, se llenará desde Airtable
 
-const mapa = L.map('map').setView([40.2, -3.5], 6);
+// Detectar si es móvil para ajustar el zoom inicial del mapa
+const isMobile = window.innerWidth <= 800;
+// Un zoom más bajo (5) aleja la vista, mostrando más área, ideal para pantallas estrechas.
+const initialZoom = isMobile ? 5 : 6;
+
+const mapa = L.map('map').setView([40.2, -3.5], initialZoom);
 
 let modal, modalImg, closeBtn;
 
@@ -167,7 +172,7 @@ function cargarPuntos() {
             <div class="imagen-placeholder"><img src="${p.imagenes.length > 0 ? p.imagenes[0] : 'https://via.placeholder.com/300'}" alt="Imagen de ${p.nombre}" width="100%"></div><br>
             <strong>Presupuesto inicial:</strong> €${p.presupuestoInicial.toLocaleString()}<br>
             <strong>Presupuesto final:</strong> <span style="${estiloPresupuestoFinal}">€${p.presupuestoFinal.toLocaleString()}</span>${textoDesviacion}<br>
-            <strong>Arquitecto:</strong> ${p.arquitecto}<br>
+            <strong>Arquitecto/Artista:</strong> ${p.arquitecto}<br>
             ${textoObras}
             <strong>Pormishuevismo:</strong> ${renderPuntuacion(p.puntuacion)}<br>
             <strong>Coordenadas:</strong> ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}<br>

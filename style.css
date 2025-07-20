@@ -32,12 +32,18 @@ body {
 .titulo-principal {
     background-color: #000000; 
     color: white;  
-    padding: 1.5rem 1rem;
+    padding: 1.5rem; /* Ajustamos padding para el nuevo layout */
     margin: -1rem -1rem 1.5rem -1rem; 
-    text-align: right;
-    position: relative; 
+    /* Convertimos a Flexbox para un control de layout robusto */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
 }
 
+.titulo-texto {
+    text-align: right;
+}
 .titulo-principal h1 {
     margin: 0 0 0.5rem 0; 
     font-size: 4rem;      
@@ -50,15 +56,14 @@ body {
 }
 
 .casco {
-    position: absolute;
-    top: 50%;
-    left: 2rem;
-    transform: translateY(-50%);
+    /* Ya no necesita posicionamiento absoluto */
+    flex-shrink: 0; /* Evita que el casco se encoja si no hay espacio */
 }
 
 .casco img {
     height: 100px; /* Ajustamos un poco el tamaño para que no sea tan grande */
     transition: transform 0.3s ease-in-out;
+    display: block; /* Mejora la consistencia del layout */
 }
 
 .casco img:hover {
@@ -491,5 +496,63 @@ footer a:hover {
 
   .sidebar-toggle-btn {
     display: block; /* Mostramos el botón en móvil */
+    position: absolute;
+    top: 10px;
+    right: 10px; /* Lo movemos a la derecha */
+    left: auto;  /* Y reseteamos la posición izquierda para que no se estire */
+  }
+
+  #map-layer-control {
+    display: none; /* Ocultamos el control de capas en móvil para simplificar la interfaz */
+  }
+
+  footer {
+    font-size: 0.7rem; /* Reducimos el tamaño de la fuente */
+    padding: 0.7rem 1rem; /* Reducimos el padding horizontal */
+    gap: 0.5rem; /* Reducimos el espacio entre los enlaces */
+  }
+
+  /* Ajustes para el encabezado de la sidebar en móvil */
+  .titulo-principal {
+    padding: 1rem; /* Reducimos el padding para un look más compacto */
+    margin-bottom: 1rem;
+  }
+
+  .titulo-principal h1 {
+    font-size: 1.4rem; /* Reducimos aún más el título */
+  }
+
+  .titulo-principal span {
+    font-size: 1rem; /* Y también el subtítulo */
+  }
+
+  .casco img {
+    height: 60px; /* Ajustamos el casco al nuevo tamaño del título */
+  }
+
+  /* Ajustes para filtros y búsqueda en móvil */
+  .controles-wrapper {
+    padding: 0.5rem; /* Menos padding general */
+    gap: 0.75rem;
+  }
+
+  .fila-controles-superior,
+  #filtros {
+    flex-direction: column; /* Apila los elementos verticalmente */
+    align-items: stretch;   /* Hace que ocupen todo el ancho disponible */
+    gap: 0.6rem;           /* Reduce el espacio entre ellos */
+  }
+
+  /* Reducir tamaño de fuente de todas las etiquetas de los controles */
+  .filtro label, .sorting-options label {
+    font-size: 0.75rem; 
+    margin-bottom: 0.1rem;
+  }
+
+  /* Reducir tamaño de los campos de formulario y botones para hacerlos más compactos */
+  #search-input, select, .busqueda-wrapper button {
+    font-size: 0.8rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
   }
 }
