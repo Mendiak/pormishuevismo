@@ -151,7 +151,30 @@ body {
   font-weight: bold;
 }
 
+.punto-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem; /* Mantenemos el padding aquí */
+}
 
+.punto-titulo {
+  flex-grow: 1;
+}
+
+.expand-icon {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+  margin-left: 1rem;
+}
+
+.punto-detalles {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease-in-out;
+  padding: 0 0.8rem; /* Padding horizontal para alinear con la cabecera */
+}
 
 .punto {
   font-size: 1rem;
@@ -159,10 +182,8 @@ body {
   transition: background 0.2s;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
   margin-bottom: 1rem;
   border-left: 0.2rem solid #ccc;  /* Subtle left border */
-  padding: 0.8rem;              /* Reduced padding */
   background: #fff;
   border: 1px solid #eee;       /* Very light border */
 }
@@ -172,6 +193,16 @@ body {
     border-left-color: #000000; /* Cambia el color del borde al pasar el ratón */
     border-left-width: 2px;
   }
+
+/* Estilos para cuando el punto está expandido */
+.punto.expandido .punto-detalles {
+  max-height: 1000px; /* Un valor suficientemente grande para que quepa el contenido */
+  padding: 0 0.8rem 0.8rem 0.8rem; /* Añadimos padding inferior al expandir */
+}
+
+.punto.expandido .expand-icon {
+  transform: rotate(180deg);
+}
 
 .ubicacion-linea {
     font-size: 0.9rem;
@@ -222,6 +253,7 @@ body {
 
 .datos-punto {
    line-height: 1.5;
+   padding-top: 0.75rem; /* Espacio entre las miniaturas y los datos de texto */
   }
 
 .datos-punto strong {
@@ -448,6 +480,27 @@ footer a:hover {
   color: #ccc;
 }
 
+/* Animación para el enlace de "Añadir proyecto" */
+@keyframes pulse-background {
+  0% {
+    background-color: rgba(255, 255, 255, 0);
+  }
+  50% {
+    /* Hacemos el pulso más intenso y rápido */
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+  100% {
+    background-color: rgba(255, 255, 255, 0);
+  }
+}
+
+.footer-cta {
+  animation: pulse-background 2s infinite ease-in-out;
+  border-radius: 5px;
+  /* Añadimos padding para que el fondo animado tenga más área y sea más obvio */
+  padding: 0.3rem 0.6rem;
+}
+
 .sidebar-toggle-btn {
   display: none; /* Oculto por defecto en escritorio */
   position: absolute;
@@ -555,4 +608,26 @@ footer a:hover {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
   }
+}
+
+/* --- Estilos para Marker Cluster --- */
+.marker-cluster-small,
+.marker-cluster-medium,
+.marker-cluster-large {
+	background-color: rgba(40, 40, 40, 0.6); /* Un gris oscuro semitransparente */
+}
+
+.marker-cluster-small div,
+.marker-cluster-medium div,
+.marker-cluster-large div {
+	background-color: rgba(0, 0, 0, 0.8); /* Fondo del número casi opaco */
+	color: #fff;
+    font-weight: bold;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Animación al hacer hover sobre un cluster */
+.leaflet-marker-icon.marker-cluster:hover {
+    transform: scale(1.1);
+    transition: transform 0.2s ease-in-out;
 }

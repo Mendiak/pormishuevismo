@@ -200,32 +200,53 @@ function cargarPuntos() {
     // Obtenemos la información del estado para mostrarla con icono y color
     const { texto, icono, claseCss } = getEstadoInfo(p.estado);
 
-    div.innerHTML = `        
-        <strong>${p.nombre}</strong>
-        <div class="ubicacion-linea">
-            ${p.ubicacion ? 
-                `<span>${p.ubicacion}</span> <span class="ubicacion-detalle">(${p.provincia})</span>` : 
-                `<span>${p.provincia}</span>`
-            }
+    div.innerHTML = `
+        <div class="punto-cabecera">
+            <div class="punto-titulo">
+                <strong>${p.nombre}</strong>
+                <div class="ubicacion-linea">
+                    ${p.ubicacion ?
+                        `<span>${p.ubicacion}</span> <span class="ubicacion-detalle">(${p.provincia})</span>` :
+                        `<span>${p.provincia}</span>`
+                    }
+                </div>
+            </div>
+            <i class="bi bi-chevron-down expand-icon"></i>
         </div>
-        ${thumbnailsHTML}
-        <div class="datos-punto">
-            <strong><i class="bi bi-cash-coin"></i> Presupuesto inicial:</strong> €${p.presupuestoInicial.toLocaleString()}<br>
-            <strong><i class="bi bi-cash-coin"></i> Presupuesto final:</strong> <span style="${estiloPresupuestoFinal}">€${p.presupuestoFinal.toLocaleString()}</span>${textoDesviacion}<br>
-            <strong>Arquitecto:</strong> ${p.arquitecto}<br>
-            ${textoObras}
-            <div class="estado-linea ${claseCss}"><strong><i class="bi ${icono}"></i> Estado:</strong> ${texto}</div>
-            <strong>Pormishuevismo:</strong> ${renderPuntuacion(p.puntuacion)}<br>
-            <strong><i class="bi bi-geo-alt"></i> Coordenadas:</strong> ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}<br>
+        <div class="punto-detalles">
+            ${thumbnailsHTML}
+            <div class="datos-punto">
+                <strong><i class="bi bi-cash-coin"></i> Presupuesto inicial:</strong> €${p.presupuestoInicial.toLocaleString()}<br>
+                <strong><i class="bi bi-cash-coin"></i> Presupuesto final:</strong> <span style="${estiloPresupuestoFinal}">€${p.presupuestoFinal.toLocaleString()}</span>${textoDesviacion}<br>
+                <strong>Arquitecto:</strong> ${p.arquitecto}<br>
+                ${textoObras}
+                <div class="estado-linea ${claseCss}"><strong><i class="bi ${icono}"></i> Estado:</strong> ${texto}</div>
+                <strong>Pormishuevismo:</strong> ${renderPuntuacion(p.puntuacion)}<br>
+                <strong><i class="bi bi-geo-alt"></i> Coordenadas:</strong> ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}<br>
+            </div>
         </div>
     `;
 
     div.addEventListener('click', () => {
-        mapa.flyTo([p.lat, p.lng], 15);
-        marker.openPopup();
-        // En móvil, oculta la sidebar al hacer clic en un punto para ver el mapa
-        if (window.innerWidth <= 800) {
-            document.getElementById('sidebar').classList.remove('sidebar-visible');
+        const isExpanding = !div.classList.contains('expandido');
+        div.classList.toggle('expandido');
+
+        // Si vamos a expandir este elemento, primero cerramos cualquier otro que esté abierto.
+        if (isExpanding) {
+            const currentlyExpanded = document.querySelector('.punto.expandido:not(#' + div.id + ')');
+            if (currentlyExpanded) {
+                currentlyExpanded.classList.remove('expandido');
+            }
+        }
+
+        // Solo centramos el mapa y abrimos el popup cuando se expande, no al colapsar
+        if (isExpanding) {
+            mapa.flyTo([p.lat, p.lng], 15);
+            marker.openPopup();
+            // En móvil, oculta la sidebar al hacer clic en un punto para ver el mapa
+            if (window.innerWidth <= 800) {
+                document.getElementById('sidebar').classList.remove('sidebar-visible');
+            }
         }
     });
 
@@ -253,11 +274,14 @@ function cargarPuntos() {
 
     marker.on('mouseover', () => {
         div.classList.add('punto-highlight');
-        div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     });
 
     marker.on('mouseout', () => {
         div.classList.remove('punto-highlight');
+    });
+
+    marker.on('click', () => {
+        div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     });
 
     document.getElementById('lista-puntos').appendChild(div);
@@ -322,6 +346,26 @@ function getEstadoInfo(estado) {
     }
 }
 
+/**
+ * Resetea el estado de los elementos activos en la UI.
+ * Colapsa cualquier elemento expandido, quita resaltados y cierra popups del mapa.
+ */
+function resetActiveElements() {
+    // Buscar y colapsar cualquier elemento expandido en la lista
+    const expandedItem = document.querySelector('.punto.expandido');
+    if (expandedItem) {
+        expandedItem.classList.remove('expandido');
+    }
+
+    // Quitar el resaltado de cualquier elemento en la lista
+    const highlightedItem = document.querySelector('.punto.punto-highlight');
+    if (highlightedItem) {
+        highlightedItem.classList.remove('punto-highlight');
+    }
+
+    // Cerrar cualquier popup que esté abierto en el mapa
+    mapa.closePopup();
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
     // Elementos del Modal
@@ -361,8 +405,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Cierra la sidebar si se hace clic en el mapa (útil en móvil)
+    // y deselecciona/colapsa cualquier punto activo.
     mapa.on('click', () => {
         sidebar.classList.remove('sidebar-visible');
+        resetActiveElements();
     });
 
     // Listeners para cerrar el modal
