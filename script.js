@@ -179,7 +179,7 @@ function cargarPuntos() {
             ${p.ubicacion ? `<strong>Ubicación:</strong> ${p.ubicacion}<br>` : ''}
         </div>
     `;
-    const marker = L.marker([p.lat, p.lng], { icon: brickIcon }).addTo(mapa).bindPopup(popupContent);
+    const marker = L.marker([p.lat, p.lng], { icon: brickIcon }).addTo(mapa).bindPopup(popupContent, { className: 'custom-popup' });
     marcadores.push(marker);
 
     const div = document.createElement('div');
