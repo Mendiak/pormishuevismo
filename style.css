@@ -283,10 +283,6 @@ select:focus { /* Subtle focus style */
   box-shadow: none;           
 }
 
-.popup-content {
-  max-width: 300px; /* Adjust as needed */
-}
-
 .emoji-icon {
     font-size: 28px;
     background: transparent;
@@ -647,6 +643,8 @@ footer a:hover {
   border-radius: 8px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.4);
   border: 1px solid #555;
+  width: 340px; /* Ancho fijo para el popup */
+  box-sizing: border-box; /* Para que el padding no aumente el ancho total */
 }
 
 /* Contenido interno del popup */
@@ -654,6 +652,15 @@ footer a:hover {
   margin: 15px; /* Un poco más de espacio interno */
   font-size: 0.9rem;
   line-height: 1.6;
+  max-height: 350px; /* Altura máxima para el contenido */
+  overflow-y: auto;  /* Scroll vertical si el contenido es muy largo */
+  padding-right: 10px; /* Espacio extra para que el scroll no tape el texto */
+}
+
+/* Clase para la descripción dentro del popup */
+.popup-descripcion {
+  white-space: pre-wrap; /* Respeta los saltos de línea y espacios del texto original */
+  margin: 10px 0;      /* Añade espacio vertical alrededor de la descripción */
 }
 
 /* La flecha/puntero del popup */
@@ -669,4 +676,18 @@ footer a:hover {
 .custom-popup .leaflet-popup-close-button:hover {
   color: #fff;
   background-color: #444;
+}
+
+/* Estilo para la barra de scroll dentro del popup (para navegadores Webkit) */
+.custom-popup .leaflet-popup-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-popup .leaflet-popup-content::-webkit-scrollbar-track {
+  background: #2c2c2c; /* Un gris un poco más claro que el fondo */
+}
+
+.custom-popup .leaflet-popup-content::-webkit-scrollbar-thumb {
+  background-color: #666; /* El color de la barra */
+  border-radius: 4px;
 }

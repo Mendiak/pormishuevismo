@@ -168,7 +168,7 @@ function cargarPuntos() {
     const popupContent = `
         <div class="popup-content">
             <strong>${p.nombre}</strong><br>
-            ${p.descripcion}<br><br>
+            <div class="popup-descripcion">${p.descripcion}</div>
             <div class="imagen-placeholder"><img src="${p.imagenes.length > 0 ? p.imagenes[0] : 'https://via.placeholder.com/300'}" alt="Imagen de ${p.nombre}" width="100%"></div><br>
             <strong>Presupuesto inicial:</strong> €${p.presupuestoInicial.toLocaleString()}<br>
             <strong>Presupuesto final:</strong> <span style="${estiloPresupuestoFinal}">€${p.presupuestoFinal.toLocaleString()}</span>${textoDesviacion}<br>
@@ -228,19 +228,10 @@ function cargarPuntos() {
     `;
 
     div.addEventListener('click', () => {
-        const isExpanding = !div.classList.contains('expandido');
-        div.classList.toggle('expandido');
-
-        // Si vamos a expandir este elemento, primero cerramos cualquier otro que esté abierto.
-        if (isExpanding) {
-            const currentlyExpanded = document.querySelector('.punto.expandido:not(#' + div.id + ')');
-            if (currentlyExpanded) {
-                currentlyExpanded.classList.remove('expandido');
-            }
-        }
+        const seHaExpandido = togglePuntoEnLista(div);
 
         // Solo centramos el mapa y abrimos el popup cuando se expande, no al colapsar
-        if (isExpanding) {
+        if (seHaExpandido) {
             mapa.flyTo([p.lat, p.lng], 15);
             marker.openPopup();
             // En móvil, oculta la sidebar al hacer clic en un punto para ver el mapa
@@ -281,7 +272,10 @@ function cargarPuntos() {
     });
 
     marker.on('click', () => {
+        // Desliza la lista hasta el elemento
         div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        // Expande la ficha del proyecto en la lista
+        togglePuntoEnLista(div);
     });
 
     document.getElementById('lista-puntos').appendChild(div);
@@ -344,6 +338,29 @@ function getEstadoInfo(estado) {
             // Si hay algún otro estado no contemplado, lo mostramos tal cual
             return { texto: estado, icono: 'bi-question-circle', claseCss: 'estado-no-especificado' };
     }
+}
+
+/**
+ * Expande o colapsa un elemento de la lista de proyectos.
+ * Se encarga de cerrar otros elementos que estuvieran abiertos.
+ * @param {HTMLElement} itemDiv - El elemento div del proyecto en la lista.
+ * @returns {boolean} - Devuelve `true` si el elemento se ha expandido, `false` si se ha colapsado.
+ */
+function togglePuntoEnLista(itemDiv) {
+    const isExpanding = !itemDiv.classList.contains('expandido');
+
+    // Si vamos a expandir, primero cerramos cualquier otro que esté abierto.
+    if (isExpanding) {
+        const currentlyExpanded = document.querySelector('.punto.expandido');
+        if (currentlyExpanded && currentlyExpanded !== itemDiv) {
+            currentlyExpanded.classList.remove('expandido');
+        }
+    }
+
+    // Expandimos/colapsamos el elemento actual
+    itemDiv.classList.toggle('expandido');
+
+    return isExpanding;
 }
 
 /**
