@@ -203,7 +203,13 @@ function cargarPuntos() {
                 <strong>Coordenadas:</strong> ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}<br>
             </div>
         `;
-        const marker = L.marker([p.lat, p.lng], { icon: brickIcon }).addTo(mapa).bindPopup(popupContent, { className: 'custom-popup' });
+        const marker = L.marker([p.lat, p.lng], { icon: brickIcon }).addTo(mapa).bindPopup(popupContent, {
+            className: 'custom-popup',
+            // Añadimos un padding generoso para el autopaneo, especialmente en la parte superior.
+            // Esto fuerza al mapa a desplazarse hacia abajo si es necesario para mostrar el popup completo.
+            // Hacemos el padding vertical dinámico: más pequeño en móvil para no empujar el mapa demasiado abajo.
+            autoPanPadding: isMobile ? L.point(50, 75) : L.point(50, 150)
+        });
         marcadores.push(marker);
 
         const div = document.createElement('div');
@@ -263,8 +269,14 @@ function cargarPuntos() {
 
             // Solo centramos el mapa y abrimos el popup cuando se expande, no al colapsar
             if (seHaExpandido) {
-                mapa.flyTo([p.lat, p.lng], 15);
-                marker.openPopup();
+                mapa.flyTo([p.lat, p.lng], 15); // Inicia la animación de vuelo
+
+                // Esperamos a que la animación 'flyTo' termine para abrir el popup.
+                // Esto asegura que el cálculo de la posición del popup es correcto y evita que se corte.
+                mapa.once('moveend', () => {
+                    marker.openPopup();
+                });
+
                 // En móvil, oculta la sidebar al hacer clic en un punto para ver el mapa
                 if (window.innerWidth <= 800) {
                     document.getElementById('sidebar').classList.remove('sidebar-visible');
