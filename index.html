@@ -25,11 +25,24 @@
 </script>
 
 <body>
+  <!-- La nueva cabecera, exclusiva para la versión móvil -->
+  <div id="mobile-header">
+    <button id="sidebar-toggle" class="sidebar-toggle-btn" title="Mostrar/Ocultar filtros">
+      <div class="hamburger-icon">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </button>
+    <div class="casco"><img src="/assets/images/casco.png" alt="Icono de casco de obra"></div>
+    <div class="titulo-texto">
+      <h1>PORMISHUEVISMO</h1>
+      <span>Mapa de un Movimiento Artístico</span>
+    </div>
+  </div>
+
   <div id="main-container">
     <div id="map">
-      <button id="sidebar-toggle" class="sidebar-toggle-btn" title="Mostrar/Ocultar filtros">
-        <i class="bi bi-list"></i>
-      </button>
       <div id="map-layer-control"><label for="map-layer-select">Estilo:</label><select id="map-layer-select"></select></div>
     </div>
     <div id="sidebar">
@@ -93,6 +106,9 @@
       </div>
       <div id="lista-puntos">
       </div>
+      <!-- Botón para volver arriba en la lista -->
+      <button id="back-to-top-btn" title="Volver arriba">
+        <i class="bi bi-arrow-up-circle-fill"></i></button>
     </div>
   </div>
 

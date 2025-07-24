@@ -8,6 +8,7 @@ const initialZoom = isMobile ? 5 : 6;
 const mapa = L.map('map').setView([40.2, -3.5], initialZoom);
 
 let modal, modalImg, closeBtn;
+let activeMarker = null; // Para guardar la referencia al marcador activo
 
 const marcadores = [];
 
@@ -84,6 +85,15 @@ const brickIcon = L.divIcon({
     popupAnchor: [0, -35] // El punto desde donde se abrirá el popup, relativo al iconAnchor
 });
 
+// Icono para el marcador seleccionado
+const selectedBrickIcon = L.divIcon({
+    html: '🧱',
+    className: 'emoji-icon selected-emoji-icon', // Clase especial para el estilo
+    iconSize: [40, 40], // Un poco más grande para que destaque
+    iconAnchor: [20, 40],
+    popupAnchor: [0, -45]
+});
+
 function renderPuntuacion(huevos) {    
     return '🥚'.repeat(huevos);
 }
@@ -151,135 +161,160 @@ function cargarPuntos() {
 
         return comparison;
     });
-    puntosFiltrados.forEach(p => {
 
-    const sobrecoste = (p.presupuestoFinal > p.presupuestoInicial * 1.25);
-    const desviacion = ((p.presupuestoFinal - p.presupuestoInicial) / p.presupuestoInicial) * 100;
-    const estiloPresupuestoFinal = sobrecoste ? 'color: red; font-weight: bold;' : '';
-    const textoDesviacion = sobrecoste ? ` (<em>+${desviacion.toFixed(0)}%</em>)` : '';
-
-    // Crear el texto del periodo de obras de forma segura
-    let textoObras = '';
-    if (p.añoInicio) {
-        const fin = p.añoFin ? p.añoFin : 'Actualidad';
-        textoObras = `<strong>Obras:</strong> ${p.añoInicio} - ${fin}<br>`;
-    }
-
-    const popupContent = `
-        <div class="popup-content">
-            <strong>${p.nombre}</strong><br>
-            <div class="popup-descripcion">${p.descripcion}</div>
-            <div class="imagen-placeholder"><img src="${p.imagenes.length > 0 ? p.imagenes[0] : 'https://via.placeholder.com/300'}" alt="Imagen de ${p.nombre}" width="100%"></div><br>
-            <strong>Presupuesto inicial:</strong> €${p.presupuestoInicial.toLocaleString()}<br>
-            <strong>Presupuesto final:</strong> <span style="${estiloPresupuestoFinal}">€${p.presupuestoFinal.toLocaleString()}</span>${textoDesviacion}<br>
-            <strong>Arquitecto/Artista:</strong> ${p.arquitecto}<br>
-            ${textoObras}
-            <strong>Pormishuevismo:</strong> ${renderPuntuacion(p.puntuacion)}<br>
-            <strong>Coordenadas:</strong> ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}<br>
-            ${p.ubicacion ? `<strong>Ubicación:</strong> ${p.ubicacion}<br>` : ''}
-        </div>
-    `;
-    const marker = L.marker([p.lat, p.lng], { icon: brickIcon }).addTo(mapa).bindPopup(popupContent, { className: 'custom-popup' });
-    marcadores.push(marker);
-
-    const div = document.createElement('div');
-    div.className = 'punto';
-    div.id = `punto-${p.id}`;
-
-    // Generar HTML para las miniaturas de las imágenes
-    let thumbnailsHTML = '';
-    if (p.imagenes && p.imagenes.length > 0) {
-        const imageElements = p.imagenes.slice(0, 3).map(url => 
-            `<img src="${url}" alt="Miniatura de ${p.nombre}" class="thumbnail-img">`
-        ).join('');
-        thumbnailsHTML = `<div class="thumbnails-container">${imageElements}</div>`;
+    // Comprobamos si hay resultados ANTES de intentar renderizar nada
+    if (puntosFiltrados.length === 0) {
+        // Si no hay resultados, mostramos el mensaje socarrón
+        document.getElementById('lista-puntos').innerHTML = `
+            <div class="empty-state-message">
+                <i class="bi bi-wind"></i>
+                <p><strong>Vaya, parece que no hay nada por aquí.</strong></p>
+                <p>O tu búsqueda es muy exquisita, o todavía no se ha construido la maravilla que buscas.</p>
+                <p>¡Prueba con otros filtros!</p>
+            </div>
+        `;
     } else {
-        thumbnailsHTML = '<div class="imagen-placeholder"><span>Sin imágenes</span></div>';
-    }
+        // Si hay resultados, procedemos a renderizar la lista como antes
+        puntosFiltrados.forEach((p, index) => {
 
-    // Obtenemos la información del estado para mostrarla con icono y color
-    const { texto, icono, claseCss } = getEstadoInfo(p.estado);
+        const sobrecoste = (p.presupuestoFinal > p.presupuestoInicial * 1.25);
+        const desviacion = ((p.presupuestoFinal - p.presupuestoInicial) / p.presupuestoInicial) * 100;
+        const estiloPresupuestoFinal = sobrecoste ? 'color: red; font-weight: bold;' : '';
+        const textoDesviacion = sobrecoste ? ` (<em>+${desviacion.toFixed(0)}%</em>)` : '';
 
-    div.innerHTML = `
-        <div class="punto-cabecera">
-            <div class="punto-titulo">
-                <strong>${p.nombre}</strong>
-                <div class="ubicacion-linea">
-                    ${p.ubicacion ?
-                        `<span>${p.ubicacion}</span> <span class="ubicacion-detalle">(${p.provincia})</span>` :
-                        `<span>${p.provincia}</span>`
-                    }
+        // Crear el texto del periodo de obras de forma segura
+        let textoObras = '';
+        if (p.añoInicio) {
+            const fin = p.añoFin ? p.añoFin : 'Actualidad';
+            textoObras = `<strong>Obras:</strong> ${p.añoInicio} - ${fin}<br>`;
+        }
+
+        const popupContent = `
+            <div class="popup-content">
+                <strong>${p.nombre}</strong><br>
+                ${p.ubicacion ? `<div class="popup-location-line"><strong>Ubicación:</strong> ${p.ubicacion}</div>` : ''}
+                <div class="imagen-placeholder"><img src="${p.imagenes.length > 0 ? p.imagenes[0] : 'https://via.placeholder.com/300'}" alt="Imagen de ${p.nombre}" width="100%"></div>
+                <div class="popup-descripcion">${p.descripcion}</div>
+                <strong>Presupuesto inicial:</strong> €${p.presupuestoInicial.toLocaleString()}<br>
+                <strong>Presupuesto final:</strong> <span style="${estiloPresupuestoFinal}">€${p.presupuestoFinal.toLocaleString()}</span>${textoDesviacion}<br>
+                <strong>Arquitecto/Artista:</strong> ${p.arquitecto}<br>
+                ${textoObras}
+                <strong>Pormishuevismo:</strong> ${renderPuntuacion(p.puntuacion)}<br>
+                <strong>Coordenadas:</strong> ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}<br>
+            </div>
+        `;
+        const marker = L.marker([p.lat, p.lng], { icon: brickIcon }).addTo(mapa).bindPopup(popupContent, { className: 'custom-popup' });
+        marcadores.push(marker);
+
+        const div = document.createElement('div');
+        div.className = 'punto';
+        div.id = `punto-${p.id}`;
+
+        // Enlazamos el elemento de la lista con su marcador y viceversa
+        div.marker = marker;
+        marker.divElement = div;
+
+        // Añadimos un retraso a la animación para crear el efecto escalonado
+        div.style.animationDelay = `${index * 50}ms`; // 50ms de retraso entre cada card
+
+        // Generar HTML para las miniaturas de las imágenes
+        let thumbnailsHTML = '';
+        if (p.imagenes && p.imagenes.length > 0) {
+            const imageElements = p.imagenes.slice(0, 3).map(url => 
+                `<img src="${url}" alt="Miniatura de ${p.nombre}" class="thumbnail-img">`
+            ).join('');
+            thumbnailsHTML = `<div class="thumbnails-container">${imageElements}</div>`;
+        } else {
+            thumbnailsHTML = '<div class="imagen-placeholder"><span>Sin imágenes</span></div>';
+        }
+
+        // Obtenemos la información del estado para mostrarla con icono y color
+        const { texto, icono, claseCss } = getEstadoInfo(p.estado);
+
+        div.innerHTML = `
+            <div class="punto-cabecera">
+                <div class="punto-titulo">
+                    <strong>${p.nombre}</strong>
+                    <div class="ubicacion-linea">
+                        ${p.ubicacion ?
+                            `<span>${p.ubicacion}</span> <span class="ubicacion-detalle">(${p.provincia})</span>` :
+                            `<span>${p.provincia}</span>`
+                        }
+                    </div>
+                </div>
+                <i class="bi bi-chevron-down expand-icon"></i>
+            </div>
+            <div class="punto-detalles">
+                ${thumbnailsHTML}
+                <div class="datos-punto">
+                    <strong><i class="bi bi-cash-coin"></i> Presupuesto inicial:</strong> €${p.presupuestoInicial.toLocaleString()}<br>
+                    <strong><i class="bi bi-cash-coin"></i> Presupuesto final:</strong> <span style="${estiloPresupuestoFinal}">€${p.presupuestoFinal.toLocaleString()}</span>${textoDesviacion}<br>
+                    <strong>Arquitecto:</strong> ${p.arquitecto}<br>
+                    ${textoObras}
+                    <div class="estado-linea ${claseCss}"><strong><i class="bi ${icono}"></i> Estado:</strong> ${texto}</div>
+                    <strong>Pormishuevismo:</strong> ${renderPuntuacion(p.puntuacion)}<br>
+                    <strong><i class="bi bi-geo-alt"></i> Coordenadas:</strong> ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}<br>
                 </div>
             </div>
-            <i class="bi bi-chevron-down expand-icon"></i>
-        </div>
-        <div class="punto-detalles">
-            ${thumbnailsHTML}
-            <div class="datos-punto">
-                <strong><i class="bi bi-cash-coin"></i> Presupuesto inicial:</strong> €${p.presupuestoInicial.toLocaleString()}<br>
-                <strong><i class="bi bi-cash-coin"></i> Presupuesto final:</strong> <span style="${estiloPresupuestoFinal}">€${p.presupuestoFinal.toLocaleString()}</span>${textoDesviacion}<br>
-                <strong>Arquitecto:</strong> ${p.arquitecto}<br>
-                ${textoObras}
-                <div class="estado-linea ${claseCss}"><strong><i class="bi ${icono}"></i> Estado:</strong> ${texto}</div>
-                <strong>Pormishuevismo:</strong> ${renderPuntuacion(p.puntuacion)}<br>
-                <strong><i class="bi bi-geo-alt"></i> Coordenadas:</strong> ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}<br>
-            </div>
-        </div>
-    `;
+        `;
 
-    div.addEventListener('click', () => {
-        const seHaExpandido = togglePuntoEnLista(div);
+        div.addEventListener('click', () => {
+            const seHaExpandido = togglePuntoEnLista(div);
 
-        // Solo centramos el mapa y abrimos el popup cuando se expande, no al colapsar
-        if (seHaExpandido) {
-            mapa.flyTo([p.lat, p.lng], 15);
-            marker.openPopup();
-            // En móvil, oculta la sidebar al hacer clic en un punto para ver el mapa
-            if (window.innerWidth <= 800) {
-                document.getElementById('sidebar').classList.remove('sidebar-visible');
+            // Solo centramos el mapa y abrimos el popup cuando se expande, no al colapsar
+            if (seHaExpandido) {
+                mapa.flyTo([p.lat, p.lng], 15);
+                marker.openPopup();
+                // En móvil, oculta la sidebar al hacer clic en un punto para ver el mapa
+                if (window.innerWidth <= 800) {
+                    document.getElementById('sidebar').classList.remove('sidebar-visible');
+                    // También reseteamos el estado del botón del menú
+                    const toggleBtn = document.getElementById('sidebar-toggle');
+                    if (toggleBtn) toggleBtn.classList.remove('open');
+                }
             }
-        }
-    });
-
-    // Añadir listeners a las miniaturas para abrir el modal
-    const thumbnailImages = div.querySelectorAll('.thumbnail-img');
-    thumbnailImages.forEach((img, index) => {
-        img.addEventListener('click', (e) => {
-            e.stopPropagation(); // Evita que se dispare el evento click del contenedor .punto
-            modalImg.src = p.imagenes[index]; // Usa la URL original de la imagen clickada
-            modal.style.display = "flex"; // Cambiado a flex para que el centrado de CSS funcione
         });
-    });
 
-    div.addEventListener('mouseover', () => {
-        if (marker._icon) { // Asegurarnos de que el icono del marcador existe
-            marker._icon.classList.add('marker-highlight');
-        }
-    });
+        // Añadir listeners a las miniaturas para abrir el modal
+        const thumbnailImages = div.querySelectorAll('.thumbnail-img');
+        thumbnailImages.forEach((img, index) => {
+            img.addEventListener('click', (e) => {
+                e.stopPropagation(); // Evita que se dispare el evento click del contenedor .punto
+                modalImg.src = p.imagenes[index]; // Usa la URL original de la imagen clickada
+                modal.style.display = "flex"; // Cambiado a flex para que el centrado de CSS funcione
+            });
+        });
 
-    div.addEventListener('mouseout', () => {
-        if (marker._icon) {
-            marker._icon.classList.remove('marker-highlight');
-        }
-    });
+        div.addEventListener('mouseover', () => {
+            if (marker._icon) { // Asegurarnos de que el icono del marcador existe
+                marker._icon.classList.add('marker-highlight');
+            }
+        });
 
-    marker.on('mouseover', () => {
-        div.classList.add('punto-highlight');
-    });
+        div.addEventListener('mouseout', () => {
+            if (marker._icon) {
+                marker._icon.classList.remove('marker-highlight');
+            }
+        });
 
-    marker.on('mouseout', () => {
-        div.classList.remove('punto-highlight');
-    });
+        marker.on('mouseover', () => {
+            div.classList.add('punto-highlight');
+        });
 
-    marker.on('click', () => {
-        // Desliza la lista hasta el elemento
-        div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        // Expande la ficha del proyecto en la lista
-        togglePuntoEnLista(div);
-    });
+        marker.on('mouseout', () => {
+            div.classList.remove('punto-highlight');
+        });
 
-    document.getElementById('lista-puntos').appendChild(div);
-    });
+        marker.on('click', () => {
+            // Desliza la lista hasta el elemento
+            marker.divElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            // Expande la ficha del proyecto en la lista
+            togglePuntoEnLista(marker.divElement);
+        });
+
+        document.getElementById('lista-puntos').appendChild(div);
+        });
+    }
 
     hideLoadingIndicator();
     document.getElementById('conteo-puntos').textContent = puntosFiltrados.length;
@@ -347,20 +382,22 @@ function getEstadoInfo(estado) {
  * @returns {boolean} - Devuelve `true` si el elemento se ha expandido, `false` si se ha colapsado.
  */
 function togglePuntoEnLista(itemDiv) {
-    const isExpanding = !itemDiv.classList.contains('expandido');
+    const isAlreadyActive = itemDiv.classList.contains('expandido');
+    const marker = itemDiv.marker;
 
-    // Si vamos a expandir, primero cerramos cualquier otro que esté abierto.
-    if (isExpanding) {
-        const currentlyExpanded = document.querySelector('.punto.expandido');
-        if (currentlyExpanded && currentlyExpanded !== itemDiv) {
-            currentlyExpanded.classList.remove('expandido');
-        }
+    // Primero, reseteamos cualquier elemento que estuviera activo
+    resetActiveElements();
+
+    // Si el elemento que hemos pulsado no era el que estaba activo, lo expandimos.
+    // Si era el activo, el reset anterior ya lo ha colapsado y no hacemos nada más.
+    if (!isAlreadyActive && marker) {
+        itemDiv.classList.add('expandido');
+        marker.setIcon(selectedBrickIcon);
+        activeMarker = marker; // Guardamos la referencia al marcador activo
+        return true; // Indicamos que se ha expandido
     }
 
-    // Expandimos/colapsamos el elemento actual
-    itemDiv.classList.toggle('expandido');
-
-    return isExpanding;
+    return false; // Indicamos que se ha colapsado (o no ha cambiado)
 }
 
 /**
@@ -368,6 +405,12 @@ function togglePuntoEnLista(itemDiv) {
  * Colapsa cualquier elemento expandido, quita resaltados y cierra popups del mapa.
  */
 function resetActiveElements() {
+    // Si hay un marcador activo, le devolvemos su icono original
+    if (activeMarker) {
+        activeMarker.setIcon(brickIcon);
+        activeMarker = null;
+    }
+
     // Buscar y colapsar cualquier elemento expandido en la lista
     const expandedItem = document.querySelector('.punto.expandido');
     if (expandedItem) {
@@ -391,6 +434,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     closeBtn = document.querySelector("#image-modal .close");
     const sidebar = document.getElementById('sidebar');
     const toggleBtn = document.getElementById('sidebar-toggle');
+    const backToTopBtn = document.getElementById('back-to-top-btn');
 
     // Configuración de capas del mapa
     const mapLayers = {
@@ -418,6 +462,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         toggleBtn.addEventListener('click', (e) => {
             e.stopPropagation(); // Evita que el clic se propague al mapa
             sidebar.classList.toggle('sidebar-visible');
+            toggleBtn.classList.toggle('open'); // Anima el icono
+        });
+    }
+
+    // Listener para el botón de "Volver Arriba"
+    if (sidebar && backToTopBtn) {
+        // Mostrar/ocultar el botón según la posición del scroll en la sidebar
+        sidebar.addEventListener('scroll', () => {
+            if (sidebar.scrollTop > 300) { // Muestra el botón después de 300px de scroll
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+
+        // Hacer scroll suave hacia arriba al hacer clic
+        backToTopBtn.addEventListener('click', () => {
+            sidebar.scrollTo({ top: 0, behavior: 'smooth' });
         });
     }
 
@@ -425,7 +487,45 @@ document.addEventListener('DOMContentLoaded', async () => {
     // y deselecciona/colapsa cualquier punto activo.
     mapa.on('click', () => {
         sidebar.classList.remove('sidebar-visible');
+        if (toggleBtn) {
+            toggleBtn.classList.remove('open'); // Resetea el icono del menú
+        }
         resetActiveElements();
+    });
+
+    // Lógica para mostrar un indicador de scroll en los popups (fade out)
+    mapa.on('popupopen', (e) => {
+        const popup = e.popup;
+        // El contenido real que se desplaza es .leaflet-popup-content
+        const contentElement = popup.getElement().querySelector('.leaflet-popup-content');
+        // El degradado se aplica al wrapper para que se posicione correctamente
+        const wrapper = popup.getElement().querySelector('.leaflet-popup-content-wrapper');
+
+        if (!contentElement || !wrapper) return;
+
+        const checkScroll = () => {
+            // Una pequeña tolerancia para evitar problemas con píxeles fraccionados
+            const tolerance = 2;
+            const isAtBottom = contentElement.scrollHeight - contentElement.scrollTop <= contentElement.clientHeight + tolerance;
+            const isScrollable = contentElement.scrollHeight > contentElement.clientHeight;
+
+            if (isScrollable && !isAtBottom) {
+                wrapper.classList.add('has-scroll');
+            } else {
+                wrapper.classList.remove('has-scroll');
+            }
+        };
+
+        // Lo comprobamos al abrir el popup (con un pequeño retardo para que se renderice)
+        setTimeout(checkScroll, 100);
+
+        // Y también cada vez que el usuario hace scroll dentro del popup
+        contentElement.addEventListener('scroll', checkScroll);
+
+        // Importante: limpiamos el listener cuando el popup se cierra para evitar fugas de memoria
+        popup.on('remove', () => {
+            contentElement.removeEventListener('scroll', checkScroll);
+        });
     });
 
     // Listeners para cerrar el modal

@@ -1,3 +1,9 @@
+:root {
+  --color-accent: #ffc107; /* Amarillo del CTA del footer */
+  --color-accent-rgb: 255, 193, 7; /* Versión RGB para usar con opacidad */
+}
+
+
 body {
       margin: 0;
       display: flex;
@@ -7,6 +13,12 @@ body {
       background: white;
       color: black;
     }
+
+/* --- Nueva Cabecera para Móvil --- */
+/* Por defecto, está oculta en escritorio para no afectar al diseño original */
+#mobile-header {
+  display: none;
+}
 
 #main-container {
   display: flex;
@@ -23,11 +35,12 @@ body {
   width: 40%;
   padding: 1rem;
   overflow-y: auto;
-  background: #d6d6d6;
+  background: #f4f7f6; /* Un fondo más claro para que las cards destaquen */
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
 }
+
 
 .titulo-principal {
     background-color: #000000; 
@@ -135,6 +148,12 @@ body {
   justify-content: center;
 }
 
+#search-button:hover, #reset-filters:hover {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #000;
+}
+
 #filtros { /* Reduced gap between filter elements */
   display: flex;
   gap: 1rem;
@@ -176,22 +195,37 @@ body {
   padding: 0 0.8rem; /* Padding horizontal para alinear con la cabecera */
 }
 
+/* Animación para la carga escalonada de las cards */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 .punto {
   font-size: 1rem;
   cursor: pointer;
-  transition: background 0.2s;
   display: flex;
   flex-direction: column;
   margin-bottom: 1rem;
-  border-left: 0.2rem solid #ccc;  /* Subtle left border */
   background: #fff;
-  border: 1px solid #eee;       /* Very light border */
+  border-radius: 8px; /* Esquinas redondeadas para el efecto card */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08); /* Sombra sutil para dar profundidad */
+  transition: box-shadow 0.3s ease, transform 0.3s ease; /* Transición suave */
+  overflow: hidden; /* Asegura que el contenido respete las esquinas redondeadas */
+  /* Propiedades para la animación de entrada */
+  opacity: 0; /* Empieza invisible para que la animación funcione */
+  animation: fadeInUp 0.4s ease-out forwards; /* 'forwards' mantiene el estado final */
 }
 
 /* Se resalta tanto al pasar el ratón por encima como al hacerlo sobre el marcador */
 #lista-puntos .punto:hover, .punto.punto-highlight {
-    border-left-color: #000000; /* Cambia el color del borde al pasar el ratón */
-    border-left-width: 2px;
+    transform: translateY(-3px); /* Levanta la card ligeramente */
+    box-shadow: 0 6px 12px rgba(0,0,0,0.12); /* Sombra más pronunciada */
   }
 
 /* Estilos para cuando el punto está expandido */
@@ -299,6 +333,11 @@ select:focus { /* Subtle focus style */
     filter: drop-shadow(0px 0px 5px rgba(0, 123, 255, 0.9));
 }
 
+/* Estilo para el icono del marcador cuando está seleccionado */
+.selected-emoji-icon {
+    filter: drop-shadow(0px 3px 8px var(--color-accent));
+}
+
 .punto strong i {
     margin-right: 0.5rem;
     color: #555;
@@ -399,7 +438,7 @@ select:focus { /* Subtle focus style */
 .loader {
   margin: 0 auto 15px auto;
   border: 6px solid #e0e0e0; /* Gris claro */
-  border-top: 6px solid #333; /* Gris oscuro para que coincida con el tema */
+  border-top: 6px solid var(--color-accent); /* Usamos el color de acento */
   border-radius: 50%;
   width: 40px;
   height: 40px;
@@ -425,8 +464,8 @@ select:focus { /* Subtle focus style */
 
 /* Estilo cuando el desplegable está seleccionado (en foco) */
 #filtros select:focus {
-    border-color: #424242; 
-    box-shadow: 0 0 5px rgba(43, 43, 43, 0.5); 
+    border-color: var(--color-accent); 
+    box-shadow: 0 0 5px rgba(var(--color-accent-rgb), 0.6); 
     outline: none; 
 }
 
@@ -449,6 +488,27 @@ select:focus { /* Subtle focus style */
   font-size: 0.9rem;
   color: #555;
   align-self: flex-end; /* Lo alineamos a la derecha dentro del contenedor de controles */
+}
+
+/* Estilo para el mensaje de "No hay resultados" */
+.empty-state-message {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #666;
+  background-color: #e9ecef;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.empty-state-message i {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 1rem;
+  color: #888;
+}
+
+.empty-state-message p {
+    margin: 0.5rem 0;
 }
 
 footer {
@@ -480,18 +540,18 @@ footer a:hover {
 @keyframes pulse-cta {
   0% {
     transform: scale(1);
-    background-color: rgba(255, 193, 7, 0.7); /* Amarillo del tema */
-    box-shadow: 0 0 4px rgba(255, 193, 7, 0.5);
+    background-color: rgba(var(--color-accent-rgb), 0.7);
+    box-shadow: 0 0 4px rgba(var(--color-accent-rgb), 0.5);
   }
   50% {
     transform: scale(1.05);
-    background-color: rgba(255, 193, 7, 1);
-    box-shadow: 0 0 12px rgba(255, 193, 7, 0.8);
+    background-color: rgba(var(--color-accent-rgb), 1);
+    box-shadow: 0 0 12px rgba(var(--color-accent-rgb), 0.8);
   }
   100% {
     transform: scale(1);
-    background-color: rgba(255, 193, 7, 0.7);
-    box-shadow: 0 0 4px rgba(255, 193, 7, 0.5);
+    background-color: rgba(var(--color-accent-rgb), 0.7);
+    box-shadow: 0 0 4px rgba(var(--color-accent-rgb), 0.5);
   }
 }
 
@@ -503,31 +563,90 @@ footer a:hover {
   font-weight: bold;
 }
 
-.sidebar-toggle-btn {
-  display: none; /* Oculto por defecto en escritorio */
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 1000; /* Por encima de las capas del mapa */
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 5px 10px;
+/* --- Botón de Volver Arriba --- */
+#back-to-top-btn {
+  position: absolute; /* Se posiciona relativo a la #sidebar */
+  bottom: 65px; /* Lo subimos para que no tape el footer en móvil */
+  right: 20px;
+  z-index: 1500; /* Por encima de la lista pero debajo de modales */
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 1.8rem;
   cursor: pointer;
-  font-size: 1.5rem;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Oculto por defecto y con una transición suave */
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-/* --- Media Query para Dispositivos Móviles --- */
+#back-to-top-btn.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* --- Estilos para el icono de menú animado (Hamburguesa a X) --- */
+.hamburger-icon {
+  width: 24px;
+  height: 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.hamburger-icon span {
+  display: block;
+  height: 3px; /* Grosor de las líneas */
+  width: 100%;
+  background: white;
+  border-radius: 3px;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Animación a 'X' cuando el botón tiene la clase 'open' */
+.sidebar-toggle-btn.open .hamburger-icon span:nth-child(1) {
+  transform: translateY(8.5px) rotate(45deg);
+}
+.sidebar-toggle-btn.open .hamburger-icon span:nth-child(2) {
+  opacity: 0;
+}
+.sidebar-toggle-btn.open .hamburger-icon span:nth-child(3) {
+  transform: translateY(-8.5px) rotate(-45deg);
+}
+
 @media (max-width: 800px) {
+  /* Mostramos la nueva cabecera y le damos estilo */
+  #mobile-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: #000;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    height: 55px;
+    box-sizing: border-box;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3); /* Sombra sutil para que destaque */
+  }
+
   #main-container {
-    /* En móvil, el contenedor principal sigue siendo flexible pero relativo para posicionar la sidebar */
     flex-direction: column;
     position: relative;
+    /* La altura ahora es el 100% del viewport menos la cabecera y el footer */
+    height: calc(100vh - 55px - 47px); 
   }
 
   #map {
-    /* El mapa ocupa todo el espacio del contenedor principal */
     width: 100%;
     height: 100%;
   }
@@ -536,9 +655,9 @@ footer a:hover {
     position: absolute;
     top: 0;
     left: 0;
+    height: 100%;
     width: 85%; /* No ocupa todo el ancho para que se vea el mapa detrás */
     max-width: 350px; /* Un ancho máximo es buena práctica */
-    height: 100%; /* Ocupa toda la altura del main-container */
     z-index: 2000; /* Por encima de todo excepto los modales */
     transform: translateX(-100%);
     transition: transform 0.3s ease-in-out;
@@ -549,12 +668,22 @@ footer a:hover {
     transform: translateX(0);
   }
 
+  /* Ocultamos el título original de la sidebar en móvil, ya que está en la cabecera */
+  #sidebar .titulo-principal {
+    display: none;
+  }
+
+  /* Estilos para los elementos dentro de la nueva cabecera móvil */
+  #mobile-header .casco img { height: 35px; transition: none; }
+  #mobile-header .casco img:hover { transform: none; }
+  #mobile-header .titulo-texto { text-align: left; flex-grow: 1; }
+  #mobile-header .titulo-texto h1 { font-size: 1.2rem; margin: 0; }
+  #mobile-header .titulo-texto span { font-size: 0.7rem; opacity: 0.8; }
+
   .sidebar-toggle-btn {
     display: block; /* Mostramos el botón en móvil */
-    position: absolute;
-    top: 10px;
-    right: 10px; /* Lo movemos a la derecha */
-    left: auto;  /* Y reseteamos la posición izquierda para que no se estire */
+    position: static; /* Ya no necesita ser absoluto */
+    background: transparent; border: none; color: white; padding: 0; box-shadow: none;
   }
 
   #map-layer-control {
@@ -565,24 +694,6 @@ footer a:hover {
     font-size: 0.7rem; /* Reducimos el tamaño de la fuente */
     padding: 0.7rem 1rem; /* Reducimos el padding horizontal */
     gap: 0.5rem; /* Reducimos el espacio entre los enlaces */
-  }
-
-  /* Ajustes para el encabezado de la sidebar en móvil */
-  .titulo-principal {
-    padding: 1rem; /* Reducimos el padding para un look más compacto */
-    margin-bottom: 1rem;
-  }
-
-  .titulo-principal h1 {
-    font-size: 1.4rem; /* Reducimos aún más el título */
-  }
-
-  .titulo-principal span {
-    font-size: 1rem; /* Y también el subtítulo */
-  }
-
-  .casco img {
-    height: 60px; /* Ajustamos el casco al nuevo tamaño del título */
   }
 
   /* Ajustes para filtros y búsqueda en móvil */
@@ -638,18 +749,18 @@ footer a:hover {
 
 /* Contenedor principal del popup (el recuadro) */
 .custom-popup .leaflet-popup-content-wrapper {
-  background: #000000; /* Fondo oscuro, como el header */
-  color: #f0f0f0;      /* Texto claro */
+  background: #ffffff; /* Fondo blanco, como las cards */
+  color: #333333;      /* Texto oscuro para legibilidad */
   border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-  border: 1px solid #555;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* Sombra más sutil */
+  border: 1px solid #e0e0e0;
   width: 340px; /* Ancho fijo para el popup */
   box-sizing: border-box; /* Para que el padding no aumente el ancho total */
 }
 
 /* Contenido interno del popup */
 .custom-popup .leaflet-popup-content {
-  margin: 15px; /* Un poco más de espacio interno */
+  margin: 20px; /* Aumentamos el margen interno como pediste */
   font-size: 0.9rem;
   line-height: 1.6;
   max-height: 350px; /* Altura máxima para el contenido */
@@ -663,31 +774,51 @@ footer a:hover {
   margin: 10px 0;      /* Añade espacio vertical alrededor de la descripción */
 }
 
+/* Clase para la línea de ubicación en el popup */
+.popup-location-line {
+    margin: 0.5rem 0 1rem 0; /* Espacio arriba y, sobre todo, abajo antes de la imagen */
+}
+
 /* La flecha/puntero del popup */
 .custom-popup .leaflet-popup-tip {
-  background: #2c2c2c;
-  border-top: 1px solid #555;
+  background: #ffffff; /* El mismo color que el fondo del popup */
+  border-top: 1px solid #e0e0e0;
 }
 
 /* Botón de cierre (la 'X') */
 .custom-popup .leaflet-popup-close-button {
-  color: #f0f0f0; /* Hacemos la 'X' más visible sobre el fondo oscuro */
+  color: #555555; /* Color oscuro para el nuevo fondo claro */
 }
 .custom-popup .leaflet-popup-close-button:hover {
-  color: #fff;
-  background-color: #444;
+  color: #000;
+  background-color: #f0f0f0;
 }
 
 /* Estilo para la barra de scroll dentro del popup (para navegadores Webkit) */
 .custom-popup .leaflet-popup-content::-webkit-scrollbar {
-  width: 8px;
+  width: 6px; /* Un poco más fina */
 }
 
 .custom-popup .leaflet-popup-content::-webkit-scrollbar-track {
-  background: #2c2c2c; /* Un gris un poco más claro que el fondo */
+  background: #f1f1f1; /* Fondo claro para la barra de scroll */
 }
 
 .custom-popup .leaflet-popup-content::-webkit-scrollbar-thumb {
-  background-color: #666; /* El color de la barra */
+  background-color: #ccc; /* Color de la barra de scroll */
   border-radius: 4px;
+}
+
+/* Estilo para el degradado inferior en popups con scroll */
+.custom-popup .leaflet-popup-content-wrapper.has-scroll::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30px; /* Altura del degradado */
+    /* El degradado va del color de fondo del popup a transparente */
+    background: linear-gradient(to top, rgb(255, 255, 255) 20%, rgba(255, 255, 255, 0));
+    pointer-events: none; /* Permite hacer clic a través del degradado */
+    z-index: 10; /* Asegura que esté por encima del contenido */
+    border-radius: 0 0 8px 8px; /* Para que coincida con las esquinas redondeadas del popup */
 }
