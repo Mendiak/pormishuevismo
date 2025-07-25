@@ -9,6 +9,7 @@ const mapa = L.map('map').setView([40.2, -3.5], initialZoom);
 
 let modal, modalImg, closeBtn;
 let activeMarker = null; // Para guardar la referencia al marcador activo
+let markerClusterGroup; // Para agrupar los marcadores
 
 const marcadores = [];
 
@@ -117,7 +118,9 @@ function cargarPuntos() {
     const sortDirection = document.getElementById('sort-direction').value;
 
     document.getElementById('lista-puntos').innerHTML = '';
-    marcadores.forEach(m => mapa.removeLayer(m));
+    // Limpiamos el grupo de clusters en lugar de quitar los marcadores uno a uno
+    markerClusterGroup.clearLayers();
+    marcadores.length = 0; // Vaciamos el array de referencias
     showLoadingIndicator();
 
     let puntosFiltrados = puntos;
@@ -203,7 +206,8 @@ function cargarPuntos() {
                 <strong>Coordenadas:</strong> ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}<br>
             </div>
         `;
-        const marker = L.marker([p.lat, p.lng], { icon: brickIcon }).addTo(mapa).bindPopup(popupContent, {
+        // Creamos el marcador pero NO lo añadimos al mapa directamente, sino al array
+        const marker = L.marker([p.lat, p.lng], { icon: brickIcon }).bindPopup(popupContent, {
             className: 'custom-popup',
             // Añadimos un padding generoso para el autopaneo, especialmente en la parte superior.
             // Esto fuerza al mapa a desplazarse hacia abajo si es necesario para mostrar el popup completo.
@@ -320,12 +324,20 @@ function cargarPuntos() {
         marker.on('click', () => {
             // Desliza la lista hasta el elemento
             marker.divElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            // Expande la ficha del proyecto en la lista
-            togglePuntoEnLista(marker.divElement);
+            // Expande la ficha del proyecto en la lista y comprueba si se ha expandido
+            const seHaExpandido = togglePuntoEnLista(marker.divElement);
+
+            // Si se ha expandido (es decir, no estaba ya abierto), abrimos su popup.
+            // Si se ha colapsado, el popup se cierra solo gracias a la llamada a resetActiveElements()
+            if (seHaExpandido) {
+                marker.openPopup();
+            }
         });
 
         document.getElementById('lista-puntos').appendChild(div);
         });
+        // Añadimos todos los marcadores al grupo de clusters de una vez para mayor eficiencia
+        markerClusterGroup.addLayers(marcadores);
     }
 
     hideLoadingIndicator();
@@ -466,6 +478,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Establecer capa por defecto
     mapLayers["Satélite"].addTo(mapa);
     mapLayerSelect.value = "Satélite";
+
+    // Inicializamos el grupo de clusters y lo añadimos al mapa
+    markerClusterGroup = L.markerClusterGroup();
+    mapa.addLayer(markerClusterGroup);
 
     // --- Event Listeners ---
 
