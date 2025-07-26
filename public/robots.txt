@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://pormishuevismo.vercel.app/sitemap.xml

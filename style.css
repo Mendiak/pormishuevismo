@@ -3,6 +3,20 @@
   --color-accent-rgb: 255, 193, 7; /* Versión RGB para usar con opacidad */
 }
 
+/*
+  Clase de utilidad para ocultar elementos visualmente pero mantenerlos
+  accesibles para los lectores de pantalla.
+*/
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
 
 body {
       margin: 0;
@@ -96,6 +110,13 @@ body {
   padding: 1rem;
   margin-bottom: 1.5rem;
   border-radius: 8px;
+}
+
+/* El fieldset ahora se encarga del layout interno de los controles */
+.controles-wrapper fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -152,6 +173,15 @@ body {
   background-color: var(--color-accent);
   border-color: var(--color-accent);
   color: #000;
+}
+
+#reset-filters:disabled,
+#reset-filters:disabled:hover {
+  background-color: #e0e0e0; /* Un gris más claro que el fondo de los controles */
+  color: #aaa;
+  cursor: not-allowed;
+  border-color: #ccc;
+  transform: none; /* Anula cualquier transformación de hover */
 }
 
 #filtros { /* Reduced gap between filter elements */
@@ -668,6 +698,25 @@ footer a:hover {
     transform: translateX(0);
   }
 
+  /* Estilos para el overlay del fondo */
+  #sidebar-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1999; /* Justo por debajo de la sidebar (z-index: 2000) */
+    opacity: 0;
+    pointer-events: none; /* No se puede hacer clic cuando está oculto */
+    transition: opacity 0.3s ease-in-out;
+  }
+
+  #sidebar-overlay.overlay-visible {
+    opacity: 1;
+    pointer-events: auto; /* Se puede hacer clic cuando está visible */
+  }
+
   /* Ocultamos el título original de la sidebar en móvil, ya que está en la cabecera */
   #sidebar .titulo-principal {
     display: none;
@@ -745,6 +794,19 @@ footer a:hover {
     transition: transform 0.2s ease-in-out;
 }
 
+/* --- Keyframes para la animación del popup --- */
+@keyframes popup-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px); /* Aumentamos el desplazamiento y reducimos la escala inicial */
+
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 /* --- Estilos para el Popup Personalizado del Mapa --- */
 
 /* Contenedor principal del popup (el recuadro) */
@@ -766,6 +828,12 @@ footer a:hover {
   max-height: 350px; /* Altura máxima para el contenido */
   overflow-y: auto;  /* Scroll vertical si el contenido es muy largo */
   padding-right: 10px; /* Espacio extra para que el scroll no tape el texto */
+}
+
+/* Aplicamos la animación al popup entero */
+.custom-popup.leaflet-popup {
+    transform-origin: bottom center; /* La animación de escala se origina desde la punta */
+    animation: popup-fade-in 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Hacemos la animación más larga y con una curva más expresiva */
 }
 
 /* Clase para la descripción dentro del popup */

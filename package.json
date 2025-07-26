@@ -1,0 +1,22 @@
+{
+  "name": "pormishuevismo",
+  "version": "1.0.0",
+  "description": "Mapa interactivo del Pormishuevismo",
+  "main": "script.js",
+  "type": "module",
+  "scripts": {
+    "build": "node generate-sitemap.js"
+  },
+  "keywords": [
+    "mapa",
+    "pormishuevismo",
+    "leaflet",
+    "arquitectura"
+  ],
+  "author": "Mikel Aramendia",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.2.1",
+    "node-fetch": "^3.3.2"
+  }
+}
