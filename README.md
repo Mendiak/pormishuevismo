@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://pormishuevismo.vercel.app/assets/images/pormishuevismo-social-share.png" alt="Logo de Pormishuevismo" width="700"/>
+  <img src="assets/images/casco.png" alt="Icono de casco de obra" width="150"/>
   <h1>Mapa del Pormishuevismo</h1>
   <p>
     Un mapa interactivo que documenta y celebra un movimiento artístico-arquitectónico singular por toda España.
@@ -108,10 +108,10 @@ For other types of contributions, please follow the standard GitHub flow (Fork, 
 
 ### 📄 Licencia / License
 
-Distribuido bajo la Licencia ISC.
+Distribuido bajo la Licencia MIT. Ver `LICENSE` para más información.
 
 <details>
-<summary>🇬🇧 Distributed under the ISC License.</summary>
+<summary>🇬🇧 Distributed under the MIT License. See `LICENSE` for more information.</summary>
 <br>
 </details>
 
