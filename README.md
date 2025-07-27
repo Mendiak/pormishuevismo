@@ -17,16 +17,16 @@
 
 ### 🇪🇸 Sobre el Proyecto
 
-**Pormishuevismo** es un mapa interactivo que documenta y celebra un movimiento artístico-arquitectónico singular por toda España. Inspirado por el trabajo de [Erik Harley](https://www.oficinaperiferia.com/), este proyecto te permite explorar, filtrar y conocer la historia detrás de cada obra.
+Este no es un simple mapa. Es el **Archivo Digital del Pormishuevismo**, una magna obra de ingeniería cartográfica dedicada a catalogar los más insignes monumentos al ego y al ladrillo que salpican nuestra geografía. Inspirado por la labor arqueológica de [Erik Harley](https://www.oficinaperiferia.com/), este proyecto se erige como un faro de conocimiento, iluminando las sombras de presupuestos desviados y estéticas dudosas.
 
-La aplicación carga dinámicamente los datos desde una base de Airtable, los muestra en un mapa de Leaflet y permite a los usuarios filtrar y buscar proyectos de interés.
+Navegue, filtre y maravíllese con las historias de hormigón y sueños (rotos) que componen este singular legado arquitectónico.
 
 <details>
 <summary>🇬🇧 About The Project</summary>
 <br>
-<b>Pormishuevismo</b> is an interactive map that documents and celebrates a unique artistic-architectural movement throughout Spain. Inspired by the work of <a href="https://www.oficinaperiferia.com/">Erik Harley</a>, this project allows you to explore, filter, and learn the story behind each creation.
+This is not a mere map. It is the <b>Digital Archive of Pormishuevismo</b>, a monumental work of cartographic engineering dedicated to cataloging the most distinguished monuments to ego and concrete that dot the Spanish landscape. Inspired by the archaeological work of <a href="https://www.oficinaperiferia.com/">Erik Harley</a>, this project stands as a beacon of knowledge, illuminating the shadows of budget overruns and questionable aesthetics.
 <br><br>
-The application dynamically loads data from an Airtable base, displays it on a Leaflet map, and allows users to filter and search for projects of interest.
+Browse, filter, and marvel at the tales of concrete and (broken) dreams that make up this unique architectural legacy.
 </details>
 
 ### ✨ Características / Features

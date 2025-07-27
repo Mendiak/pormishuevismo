@@ -617,7 +617,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     mapLayerSelect.value = "Satélite";
 
     // Inicializamos el grupo de clusters y lo añadimos al mapa
-    markerClusterGroup = L.markerClusterGroup();
+    markerClusterGroup = L.markerClusterGroup({
+        // El radio máximo que un clúster cubrirá en píxeles.
+        // El valor por defecto es 80. Un valor más bajo hará que los clústeres
+        // sean más "pequeños" y solo agrupen marcadores que estén muy cerca.
+        // Probamos con 40 para evitar que puntos lejanos se agrupen.
+        maxClusterRadius: 40
+    });
     mapa.addLayer(markerClusterGroup);
 
     // --- Event Listeners ---
