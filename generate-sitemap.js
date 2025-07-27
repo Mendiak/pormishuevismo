@@ -1,4 +1,3 @@
-import fetch from 'node-fetch';
 import fs from 'fs';
 
 // Carga las variables de entorno si usas un archivo .env localmente

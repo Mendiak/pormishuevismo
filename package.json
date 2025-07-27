@@ -5,7 +5,7 @@
   "main": "script.js",
   "type": "module",
   "scripts": {
-    "build": "copyfiles -u 1 *.html *.css *.js public && node generate-sitemap.js"
+    "build": "copyfiles -e generate-sitemap.js *.html *.css *.js assets/**/* public && node generate-sitemap.js"
   },
   "keywords": [
     "mapa",
@@ -16,8 +16,7 @@
   "author": "Mikel Aramendia",
   "license": "MIT",
   "dependencies": {
-    "dotenv": "^17.2.1",
-    "node-fetch": "^3.3.2"
+    "dotenv": "^17.2.1"
   },
   "devDependencies": {
     "copyfiles": "^2.4.1"
