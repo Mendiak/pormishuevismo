@@ -9,10 +9,12 @@ const SITE_URL = 'https://pormishuevismo.vercel.app';
 
 async function generateSitemap() {
     console.log('Obteniendo IDs de proyectos desde Airtable...');
-    const airtableUrl = `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/${process.env.AIRTABLE_TABLE_ID}?fields%5B%5D=id`;
+    // Hacemos la petición más eficiente pidiendo solo un campo pequeño (el primario).
+    // Airtable siempre devuelve el ID de registro ('rec...') en el nivel superior del objeto.
+    const airtableUrl = `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/${process.env.AIRTABLE_TABLE_ID}?fields%5B%5D=nombre`;
     
     const response = await fetch(airtableUrl, {
-        headers: { 'Authorization': `Bearer ${process.env.AIRTABLE_API_KEY}` }
+        headers: { 'Authorization': `Bearer ${process.env.AIRTABLE_API_TOKEN}` }
     });
 
     // --- INICIO DE LA MODIFICACIÓN ---
@@ -28,7 +30,7 @@ async function generateSitemap() {
     const data = await response.json();
 
     // Nos aseguramos de que 'records' exista antes de mapearlo
-    const projectIds = (data.records || []).map(rec => rec.fields.id);
+    const projectIds = (data.records || []).map(rec => rec.id); // Usamos el ID de registro de Airtable
     console.log(`Encontrados ${projectIds.length} proyectos.`);
 
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>

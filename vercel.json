@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/proyecto/:id",
+      "destination": "/api/proyecto/[id].js"
+    }
+  ]
+}

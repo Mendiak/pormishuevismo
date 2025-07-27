@@ -46,7 +46,7 @@ async function cargarDatosDesdeAirtable() {
             const lng = coordsParts.length === 2 ? parseFloat(coordsParts[1].trim()) || 0 : 0;
 
             return {
-                id: record.fields.id || `gen_${Math.random()}`,
+                id: record.id, // Usamos el ID de registro de Airtable, que es único y permanente.
                 nombre: record.fields.nombre || 'Registro sin nombre',
                 provincia: record.fields.provincia || 'Sin provincia',
                 tipo: record.fields.tipo,
@@ -76,7 +76,8 @@ async function cargarDatosDesdeAirtable() {
         cargarPuntos();
 
     } catch (error) {
-        console.error("No se pudieron cargar los datos desde Airtable:", error);
+        console.error("Error detallado capturado en el frontend:", error);
+        console.error("Mensaje del error:", error.message);
         document.getElementById('lista-puntos').innerHTML = `<p style="color: red; text-align: center;">${error.message}</p>`;
     } finally {
         hideLoadingIndicator();
