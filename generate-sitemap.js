@@ -8,13 +8,22 @@ dotenv.config();
 const SITE_URL = 'https://pormishuevismo.vercel.app';
 
 async function generateSitemap() {
+    const { AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID, AIRTABLE_API_TOKEN } = process.env;
+
+    // Añadimos una comprobación para asegurarnos de que las variables de entorno están cargadas.
+    // Esto da un error mucho más claro si falta la configuración.
+    if (!AIRTABLE_BASE_ID || !AIRTABLE_TABLE_ID || !AIRTABLE_API_TOKEN) {
+        console.error('Error: Faltan variables de entorno de Airtable. Asegúrate de que tu archivo .env.local existe y contiene AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID y AIRTABLE_API_TOKEN.');
+        throw new Error('Variables de entorno de Airtable no configuradas.');
+    }
+
     console.log('Obteniendo IDs de proyectos desde Airtable...');
     // Hacemos la petición más eficiente pidiendo solo un campo pequeño (el primario).
     // Airtable siempre devuelve el ID de registro ('rec...') en el nivel superior del objeto.
-    const airtableUrl = `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/${process.env.AIRTABLE_TABLE_ID}?fields%5B%5D=nombre`;
+    const airtableUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_ID}?fields%5B%5D=nombre`;
     
     const response = await fetch(airtableUrl, {
-        headers: { 'Authorization': `Bearer ${process.env.AIRTABLE_API_TOKEN}` }
+        headers: { 'Authorization': `Bearer ${AIRTABLE_API_TOKEN}` }
     });
 
     // --- INICIO DE LA MODIFICACIÓN ---

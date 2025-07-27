@@ -5,7 +5,7 @@
   "main": "script.js",
   "type": "module",
   "scripts": {
-    "build": "node generate-sitemap.js"
+    "build": "copyfiles -u 1 *.html *.css *.js public && node generate-sitemap.js"
   },
   "keywords": [
     "mapa",
@@ -18,5 +18,8 @@
   "dependencies": {
     "dotenv": "^17.2.1",
     "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "copyfiles": "^2.4.1"
   }
 }

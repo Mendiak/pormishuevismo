@@ -1,0 +1,892 @@
+:root {
+  --color-accent: #ffc107; /* Amarillo del CTA del footer */
+  --color-accent-rgb: 255, 193, 7; /* Versión RGB para usar con opacidad */
+}
+
+/*
+  Clase de utilidad para ocultar elementos visualmente pero mantenerlos
+  accesibles para los lectores de pantalla.
+*/
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+body {
+      margin: 0;
+      display: flex;
+      flex-direction: column; /* Apila el main-container y el footer verticalmente */
+      height: 100vh;
+      font-family: 'Roboto', sans-serif;
+      background: white;
+      color: black;
+    }
+
+/* --- Nueva Cabecera para Móvil --- */
+/* Por defecto, está oculta en escritorio para no afectar al diseño original */
+#mobile-header {
+  display: none;
+}
+
+#main-container {
+  display: flex;
+  flex: 1; /* Hace que este contenedor ocupe todo el espacio vertical disponible */
+  overflow: hidden; /* Evita que el contenido interno cause un scroll en el body */
+}
+
+#map {
+  width: 60%;
+  position: relative; /* Necesario para posicionar elementos hijos absolutos como el toggle */
+}
+
+#sidebar {
+  width: 40%;
+  padding: 1rem;
+  overflow-y: auto;
+  background: #f4f7f6; /* Un fondo más claro para que las cards destaquen */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+
+.titulo-principal {
+    background-color: #000000; 
+    color: white;  
+    padding: 1.5rem; /* Ajustamos padding para el nuevo layout */
+    margin: -1rem -1rem 1.5rem -1rem; 
+    /* Convertimos a Flexbox para un control de layout robusto */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.titulo-texto {
+    text-align: right;
+}
+.titulo-principal h1 {
+    margin: 0 0 0.5rem 0; 
+    font-size: 4rem;      
+    font-weight: 600;     
+}
+
+.titulo-principal span {
+    font-size: 2rem;    
+    opacity: 0.8;
+}
+
+.casco {
+    /* Ya no necesita posicionamiento absoluto */
+    flex-shrink: 0; /* Evita que el casco se encoja si no hay espacio */
+}
+
+.casco img {
+    height: 100px; /* Ajustamos un poco el tamaño para que no sea tan grande */
+    transition: transform 0.3s ease-in-out;
+    display: block; /* Mejora la consistencia del layout */
+}
+
+.casco img:hover {
+    transform: rotate(-15deg) scale(1.1);
+}
+
+#sidebar h2 {
+  font-size: 2rem;
+  margin-top: 0;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.controles-wrapper {
+  background: #e9e9e9;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+}
+
+/* El fieldset ahora se encarga del layout interno de los controles */
+.controles-wrapper fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.fila-controles-superior {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem; /* Aumentamos el espacio entre búsqueda y ordenación */
+  flex-wrap: wrap; /* Permite que se apilen en pantallas muy pequeñas */
+}
+
+.busqueda-wrapper {
+  display: flex;
+  flex-grow: 1; /* Hace que la barra de búsqueda ocupe el espacio disponible */
+}
+
+.busqueda-wrapper input {
+  border-radius: 6px 0 0 6px;
+}
+
+.busqueda-wrapper button {
+  border-radius: 0;
+  border-left: none;
+  padding: 0.5rem 0.8rem;
+}
+
+.busqueda-wrapper button:last-child {
+  border-radius: 0 6px 6px 0;
+}
+
+#search-input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #ccc; 
+    font-size: 0.9rem;
+    min-width: 0; /* Fix for flexbox overflow */
+}
+
+#search-button, #reset-filters {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  color: #333;
+  font-size: 1rem; /* Icon size */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#search-button:hover, #reset-filters:hover {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #000;
+}
+
+#reset-filters:disabled,
+#reset-filters:disabled:hover {
+  background-color: #e0e0e0; /* Un gris más claro que el fondo de los controles */
+  color: #aaa;
+  cursor: not-allowed;
+  border-color: #ccc;
+  transform: none; /* Anula cualquier transformación de hover */
+}
+
+#filtros { /* Reduced gap between filter elements */
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.5rem; /* Reduced margin */
+}
+
+.filtro {
+  flex: 1;
+}
+
+.filtro label {
+  display: block;
+  margin-bottom: 0.25rem;  /* Reduced margin */
+  font-weight: bold;
+}
+
+.punto-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem; /* Mantenemos el padding aquí */
+}
+
+.punto-titulo {
+  flex-grow: 1;
+}
+
+.expand-icon {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+  margin-left: 1rem;
+}
+
+.punto-detalles {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease-in-out;
+  padding: 0 0.8rem; /* Padding horizontal para alinear con la cabecera */
+}
+
+/* Animación para la carga escalonada de las cards */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.punto {
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+  background: #fff;
+  border-radius: 8px; /* Esquinas redondeadas para el efecto card */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08); /* Sombra sutil para dar profundidad */
+  transition: box-shadow 0.3s ease, transform 0.3s ease; /* Transición suave */
+  overflow: hidden; /* Asegura que el contenido respete las esquinas redondeadas */
+  /* Propiedades para la animación de entrada */
+  opacity: 0; /* Empieza invisible para que la animación funcione */
+  animation: fadeInUp 0.4s ease-out forwards; /* 'forwards' mantiene el estado final */
+}
+
+/* Se resalta tanto al pasar el ratón por encima como al hacerlo sobre el marcador */
+#lista-puntos .punto:hover, .punto.punto-highlight {
+    transform: translateY(-3px); /* Levanta la card ligeramente */
+    box-shadow: 0 6px 12px rgba(0,0,0,0.12); /* Sombra más pronunciada */
+  }
+
+/* Estilos para cuando el punto está expandido */
+.punto.expandido .punto-detalles {
+  max-height: 1000px; /* Un valor suficientemente grande para que quepa el contenido */
+  padding: 0 0.8rem 0.8rem 0.8rem; /* Añadimos padding inferior al expandir */
+}
+
+.punto.expandido .expand-icon {
+  transform: rotate(180deg);
+}
+
+.ubicacion-linea {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 0.25rem;
+}
+
+.ubicacion-detalle {
+    font-style: italic;
+    margin-left: 0.5rem;
+}
+
+.thumbnails-container {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.thumbnail-img {
+    width: calc(33.333% - 0.33rem); /* Ajusta el ancho teniendo en cuenta el espacio (gap) */
+    height: 80px;
+    object-fit: cover;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.thumbnail-img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.imagen-placeholder {
+    width: 100%;
+    height: 150px; 
+    background-color: #ddd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.imagen-placeholder img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.datos-punto {
+   line-height: 1.5;
+   padding-top: 0.75rem; /* Espacio entre las miniaturas y los datos de texto */
+  }
+
+.datos-punto strong {
+    font-weight: bold; 
+}
+
+select {
+  width: 100%;               
+  padding: 0.6rem 2.5rem 0.6rem 0.75rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: #212529;
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  appearance: none;         
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 16px 12px;
+  cursor: pointer;
+  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+select:focus { /* Subtle focus style */
+  border-color: #aaa;
+  outline: none;              
+  box-shadow: none;           
+}
+
+.emoji-icon {
+    font-size: 28px;
+    background: transparent;
+    border: none;
+}
+
+.leaflet-marker-icon {
+    transition: transform 0.2s ease-in-out, filter 0.2s ease-in-out;
+}
+
+.marker-highlight {
+    transform: scale(1.3);
+    transform-origin: bottom center;
+    filter: drop-shadow(0px 0px 5px rgba(0, 123, 255, 0.9));
+}
+
+/* Estilo para el icono del marcador cuando está seleccionado */
+.selected-emoji-icon {
+    filter: drop-shadow(0px 3px 8px var(--color-accent));
+}
+
+.punto strong i {
+    margin-right: 0.5rem;
+    color: #555;
+}
+
+.estado-linea {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* Espacio entre icono y texto */
+}
+
+.estado-finalizado .bi {
+    color: #198754; /* Verde */
+}
+
+.estado-en-construccion .bi {
+    color: #ffc107; /* Naranja/Amarillo */
+}
+
+.estado-paralizado .bi {
+    color: #dc3545; /* Rojo */
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 2000; /* Aumentamos el z-index para que se muestre por encima de todo */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.9);
+  /* Añadimos flexbox para centrar el contenido vertical y horizontalmente */
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  margin: auto;
+  display: block;
+  max-width: 80%;
+  max-height: 80%;
+  object-fit: contain; /* Ensure the whole image is visible */
+}
+
+.close {
+  position: absolute;
+  top: 15px;
+  right: 35px;
+  color: #ccc;
+  font-size: 40px;
+  font-weight: bold;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+#map-layer-control {
+  position: absolute;
+  bottom: 30px;
+  left: 10px;
+  z-index: 1000;
+  background: white;
+  padding: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+#map-layer-control label {
+  margin-right: 10px;
+}
+
+
+.sorting-options label {
+    margin-right: 5px;
+}
+
+.sorting-options select {
+    width: auto;
+}
+
+.sorting-options select#sort-direction { /* Specific style for direction dropdown */
+    margin-left: 5px;
+}
+
+/* Loading indicator styles */
+#loading-indicator {
+    display: none; /* Hidden by default */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1001; /* Ensure it's above the map */
+    background: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.loader {
+  margin: 0 auto 15px auto;
+  border: 6px solid #e0e0e0; /* Gris claro */
+  border-top: 6px solid var(--color-accent); /* Usamos el color de acento */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Estilos personalizados para los desplegables de los filtros */
+#filtros select {
+    background-color: #ffffff; 
+    color: #000000; 
+    border: none;
+    padding: 0.7rem; 
+    transition: border-color 0.3s ease, box-shadow 0.3s ease; 
+  }
+
+#filtros select:hover {
+    border-color: #757575; }
+
+/* Estilo cuando el desplegable está seleccionado (en foco) */
+#filtros select:focus {
+    border-color: var(--color-accent); 
+    box-shadow: 0 0 5px rgba(var(--color-accent-rgb), 0.6); 
+    outline: none; 
+}
+
+.leyenda-mapa {
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  background-color: #e0e0e0;
+  border-left: 3px solid #757575;
+  font-size: 0.9rem;
+  color: #333;
+  text-align: center;
+}
+
+.leyenda-mapa i {
+  margin-right: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.conteo-resultados {
+  font-size: 0.9rem;
+  color: #555;
+  align-self: flex-end; /* Lo alineamos a la derecha dentro del contenedor de controles */
+}
+
+/* Estilo para el mensaje de "No hay resultados" */
+.empty-state-message {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #666;
+  background-color: #e9ecef;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.empty-state-message i {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 1rem;
+  color: #888;
+}
+
+.empty-state-message p {
+    margin: 0.5rem 0;
+}
+
+footer {
+  background: #000;
+  color: #fff;
+  padding: 0.7rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; /* Para que se ajuste en pantallas pequeñas */
+  gap: 1rem;
+  font-size: 0.8rem;
+  z-index: 1001; /* Para que esté por encima del mapa en móvil */
+}
+
+footer a {
+  color: #fff;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+footer a:hover {
+  color: #ccc;
+}
+
+/* Animación más llamativa para el enlace de "Añadir proyecto" */
+@keyframes pulse-cta {
+  0% {
+    transform: scale(1);
+    background-color: rgba(var(--color-accent-rgb), 0.7);
+    box-shadow: 0 0 4px rgba(var(--color-accent-rgb), 0.5);
+  }
+  50% {
+    transform: scale(1.05);
+    background-color: rgba(var(--color-accent-rgb), 1);
+    box-shadow: 0 0 12px rgba(var(--color-accent-rgb), 0.8);
+  }
+  100% {
+    transform: scale(1);
+    background-color: rgba(var(--color-accent-rgb), 0.7);
+    box-shadow: 0 0 4px rgba(var(--color-accent-rgb), 0.5);
+  }
+}
+
+.footer-cta {
+  animation: pulse-cta 1.5s infinite ease-in-out;
+  border-radius: 5px;
+  padding: 0.3rem 0.6rem;
+  color: #000; /* Texto negro para contraste con el fondo amarillo */
+  font-weight: bold;
+}
+
+/* --- Botón de Volver Arriba --- */
+#back-to-top-btn {
+  position: absolute; /* Se posiciona relativo a la #sidebar */
+  bottom: 65px; /* Lo subimos para que no tape el footer en móvil */
+  right: 20px;
+  z-index: 1500; /* Por encima de la lista pero debajo de modales */
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 1.8rem;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Oculto por defecto y con una transición suave */
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#back-to-top-btn.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* --- Estilos para el icono de menú animado (Hamburguesa a X) --- */
+.hamburger-icon {
+  width: 24px;
+  height: 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.hamburger-icon span {
+  display: block;
+  height: 3px; /* Grosor de las líneas */
+  width: 100%;
+  background: white;
+  border-radius: 3px;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Animación a 'X' cuando el botón tiene la clase 'open' */
+.sidebar-toggle-btn.open .hamburger-icon span:nth-child(1) {
+  transform: translateY(8.5px) rotate(45deg);
+}
+.sidebar-toggle-btn.open .hamburger-icon span:nth-child(2) {
+  opacity: 0;
+}
+.sidebar-toggle-btn.open .hamburger-icon span:nth-child(3) {
+  transform: translateY(-8.5px) rotate(-45deg);
+}
+
+@media (max-width: 800px) {
+  /* Mostramos la nueva cabecera y le damos estilo */
+  #mobile-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: #000;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    height: 55px;
+    box-sizing: border-box;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3); /* Sombra sutil para que destaque */
+  }
+
+  #main-container {
+    flex-direction: column;
+    position: relative;
+    /* La altura ahora es el 100% del viewport menos la cabecera y el footer */
+    height: calc(100vh - 55px - 47px); 
+  }
+
+  #map {
+    width: 100%;
+    height: 100%;
+  }
+
+  #sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 85%; /* No ocupa todo el ancho para que se vea el mapa detrás */
+    max-width: 350px; /* Un ancho máximo es buena práctica */
+    z-index: 2000; /* Por encima de todo excepto los modales */
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+    box-shadow: 3px 0 15px rgba(0,0,0,0.2);
+  }
+
+  #sidebar.sidebar-visible {
+    transform: translateX(0);
+  }
+
+  /* Estilos para el overlay del fondo */
+  #sidebar-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1999; /* Justo por debajo de la sidebar (z-index: 2000) */
+    opacity: 0;
+    pointer-events: none; /* No se puede hacer clic cuando está oculto */
+    transition: opacity 0.3s ease-in-out;
+  }
+
+  #sidebar-overlay.overlay-visible {
+    opacity: 1;
+    pointer-events: auto; /* Se puede hacer clic cuando está visible */
+  }
+
+  /* Ocultamos el título original de la sidebar en móvil, ya que está en la cabecera */
+  #sidebar .titulo-principal {
+    display: none;
+  }
+
+  /* Estilos para los elementos dentro de la nueva cabecera móvil */
+  #mobile-header .casco img { height: 35px; transition: none; }
+  #mobile-header .casco img:hover { transform: none; }
+  #mobile-header .titulo-texto { text-align: left; flex-grow: 1; }
+  #mobile-header .titulo-texto h1 { font-size: 1.2rem; margin: 0; }
+  #mobile-header .titulo-texto span { font-size: 0.7rem; opacity: 0.8; }
+
+  .sidebar-toggle-btn {
+    display: block; /* Mostramos el botón en móvil */
+    position: static; /* Ya no necesita ser absoluto */
+    background: transparent; border: none; color: white; padding: 0; box-shadow: none;
+  }
+
+  #map-layer-control {
+    display: none; /* Ocultamos el control de capas en móvil para simplificar la interfaz */
+  }
+
+  footer {
+    font-size: 0.7rem; /* Reducimos el tamaño de la fuente */
+    padding: 0.7rem 1rem; /* Reducimos el padding horizontal */
+    gap: 0.5rem; /* Reducimos el espacio entre los enlaces */
+  }
+
+  /* Ajustes para filtros y búsqueda en móvil */
+  .controles-wrapper {
+    padding: 0.5rem; /* Menos padding general */
+    gap: 0.75rem;
+  }
+
+  .fila-controles-superior,
+  #filtros {
+    flex-direction: column; /* Apila los elementos verticalmente */
+    align-items: stretch;   /* Hace que ocupen todo el ancho disponible */
+    gap: 0.6rem;           /* Reduce el espacio entre ellos */
+  }
+
+  /* Reducir tamaño de fuente de todas las etiquetas de los controles */
+  .filtro label, .sorting-options label {
+    font-size: 0.75rem; 
+    margin-bottom: 0.1rem;
+  }
+
+  /* Reducir tamaño de los campos de formulario y botones para hacerlos más compactos */
+  #search-input, select, .busqueda-wrapper button {
+    font-size: 0.8rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+}
+
+/* --- Estilos para Marker Cluster --- */
+.marker-cluster-small,
+.marker-cluster-medium,
+.marker-cluster-large {
+	background-color: rgba(40, 40, 40, 0.6); /* Un gris oscuro semitransparente */
+}
+
+.marker-cluster-small div,
+.marker-cluster-medium div,
+.marker-cluster-large div {
+	background-color: rgba(0, 0, 0, 0.8); /* Fondo del número casi opaco */
+	color: #fff;
+    font-weight: bold;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Animación al hacer hover sobre un cluster */
+.leaflet-marker-icon.marker-cluster:hover {
+    transform: scale(1.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+/* --- Keyframes para la animación del popup --- */
+@keyframes popup-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px); /* Aumentamos el desplazamiento y reducimos la escala inicial */
+
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* --- Estilos para el Popup Personalizado del Mapa --- */
+
+/* Contenedor principal del popup (el recuadro) */
+.custom-popup .leaflet-popup-content-wrapper {
+  background: #ffffff; /* Fondo blanco, como las cards */
+  color: #333333;      /* Texto oscuro para legibilidad */
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* Sombra más sutil */
+  border: 1px solid #e0e0e0;
+  width: 340px; /* Ancho fijo para el popup */
+  box-sizing: border-box; /* Para que el padding no aumente el ancho total */
+}
+
+/* Contenido interno del popup */
+.custom-popup .leaflet-popup-content {
+  margin: 20px; /* Aumentamos el margen interno como pediste */
+  font-size: 0.9rem;
+  line-height: 1.6;
+  max-height: 350px; /* Altura máxima para el contenido */
+  overflow-y: auto;  /* Scroll vertical si el contenido es muy largo */
+  padding-right: 10px; /* Espacio extra para que el scroll no tape el texto */
+}
+
+/* Aplicamos la animación al popup entero */
+.custom-popup.leaflet-popup {
+    transform-origin: bottom center; /* La animación de escala se origina desde la punta */
+    animation: popup-fade-in 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Hacemos la animación más larga y con una curva más expresiva */
+}
+
+/* Clase para la descripción dentro del popup */
+.popup-descripcion {
+  white-space: pre-wrap; /* Respeta los saltos de línea y espacios del texto original */
+  margin: 10px 0;      /* Añade espacio vertical alrededor de la descripción */
+}
+
+/* Clase para la línea de ubicación en el popup */
+.popup-location-line {
+    margin: 0.5rem 0 1rem 0; /* Espacio arriba y, sobre todo, abajo antes de la imagen */
+}
+
+/* La flecha/puntero del popup */
+.custom-popup .leaflet-popup-tip {
+  background: #ffffff; /* El mismo color que el fondo del popup */
+  border-top: 1px solid #e0e0e0;
+}
+
+/* Botón de cierre (la 'X') */
+.custom-popup .leaflet-popup-close-button {
+  color: #555555; /* Color oscuro para el nuevo fondo claro */
+}
+.custom-popup .leaflet-popup-close-button:hover {
+  color: #000;
+  background-color: #f0f0f0;
+}
+
+/* Estilo para la barra de scroll dentro del popup (para navegadores Webkit) */
+.custom-popup .leaflet-popup-content::-webkit-scrollbar {
+  width: 6px; /* Un poco más fina */
+}
+
+.custom-popup .leaflet-popup-content::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Fondo claro para la barra de scroll */
+}
+
+.custom-popup .leaflet-popup-content::-webkit-scrollbar-thumb {
+  background-color: #ccc; /* Color de la barra de scroll */
+  border-radius: 4px;
+}
+
+/* Estilo para el degradado inferior en popups con scroll */
+.custom-popup .leaflet-popup-content-wrapper.has-scroll::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30px; /* Altura del degradado */
+    /* El degradado va del color de fondo del popup a transparente */
+    background: linear-gradient(to top, rgb(255, 255, 255) 20%, rgba(255, 255, 255, 0));
+    pointer-events: none; /* Permite hacer clic a través del degradado */
+    z-index: 10; /* Asegura que esté por encima del contenido */
+    border-radius: 0 0 8px 8px; /* Para que coincida con las esquinas redondeadas del popup */
+}
