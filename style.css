@@ -324,6 +324,97 @@ body {
     font-weight: bold; 
 }
 
+.cifra-estimada-info {
+    margin-left: 0.4rem;
+    color: #6c757d; /* Un gris estándar */
+    cursor: help;
+    font-size: 0.9rem;
+    display: inline-flex;
+    vertical-align: middle; /* Alinea el icono con el texto */
+}
+
+.ficha-completa-btn {
+    display: block;
+    margin-top: 1rem;
+    padding: 0.6rem 1rem;
+    background-color: var(--color-accent);
+    color: #000;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    text-align: center;
+}
+
+.ficha-completa-btn i {
+    margin-right: 0.5rem;
+}
+
+.ficha-completa-btn:hover {
+    background-color: #ffda6a; /* A lighter yellow */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.share-container {
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+.share-buttons {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
+.share-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    text-decoration: none;
+    color: #fff;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.share-btn:hover {
+    transform: scale(1.1);
+    opacity: 0.9;
+}
+
+.share-btn.twitter { background-color: #000000; }
+.share-btn.facebook { background-color: #1877F2; }
+.share-btn.whatsapp { background-color: #25D366; }
+.share-btn.copy-link { background-color: #6c757d; } /* Gris de Bootstrap */
+
+.share-btn.copy-link:disabled {
+    background-color: #198754; /* Verde éxito */
+    cursor: default;
+    transform: none;
+    opacity: 1;
+}
+
+.share-btn.copy-link:disabled i {
+    display: none; /* Oculta el icono de portapapeles al copiar */
+}
+
+/* --- Fix de especificidad para los botones de compartir dentro del popup --- */
+/* Leaflet puede tener estilos por defecto que interfieren. Con esta regla
+   nos aseguramos de que nuestros estilos para compartir se apliquen correctamente
+   también dentro de los popups del mapa. */
+.custom-popup .share-container {
+    border-top: 1px solid #e0e0e0;
+    padding-top: 0.75rem;
+    margin-top: 1rem;
+}
+
 select {
   width: 100%;               
   padding: 0.6rem 2.5rem 0.6rem 0.75rem;
@@ -896,4 +987,196 @@ footer a:hover {
     pointer-events: none; /* Permite hacer clic a través del degradado */
     z-index: 10; /* Asegura que esté por encima del contenido */
     border-radius: 0 0 8px 8px; /* Para que coincida con las esquinas redondeadas del popup */
+}
+
+/* --- Estilos para la cabecera en las fichas de proyecto --- */
+/* Usamos una clase nueva para no interferir con la cabecera de la sidebar */
+.titulo-principal-ficha {
+    background-color: #000;
+    color: white;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.titulo-principal-ficha .titulo-texto {
+    flex-grow: 1; /* Ocupa el espacio sobrante */
+    text-align: left;
+}
+
+.titulo-principal-ficha h1 {
+    margin: 0 0 0.25rem 0;
+    font-size: 2.5rem;
+    font-weight: 600;
+}
+
+.titulo-principal-ficha span {
+    font-size: 1.2rem;
+    opacity: 0.8;
+}
+
+.titulo-principal-ficha .casco img {
+    height: 70px;
+}
+
+.volver-al-mapa-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 1.2rem;
+    background-color: var(--color-accent);
+    color: #000;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.volver-al-mapa-btn i {
+    font-size: 1.2rem;
+}
+
+.volver-al-mapa-btn:hover {
+    background-color: #ffda6a;
+    transform: translateY(-2px);
+    color: #000;
+}
+
+/* --- Estilos para la página de detalle del proyecto --- */
+.project-detail-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+    color: #333;
+}
+
+.project-title {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #000;
+}
+
+.project-location {
+    font-size: 1.2rem;
+    color: #666;
+    margin-top: 0;
+    margin-bottom: 2.5rem;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 1.5rem;
+}
+
+.project-main-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 3rem;
+    margin-bottom: 3rem;
+}
+
+.project-description h2,
+.project-info-sidebar h2,
+.project-gallery h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--color-accent);
+    display: inline-block;
+}
+
+.project-description p {
+    line-height: 1.7;
+    font-size: 1.1rem;
+}
+
+.project-info-sidebar .info-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.project-info-sidebar .info-item {
+    background: #f9f9f9;
+    padding: 1rem;
+    border-radius: 6px;
+    border-left: 4px solid #ddd;
+}
+
+.project-info-sidebar .info-item strong {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.project-info-sidebar .info-item i {
+    margin-right: 0.5rem;
+}
+
+.project-info-sidebar .info-item.budget {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.project-info-sidebar .info-item.budget.over-budget {
+    border-left-color: #dc3545; /* Rojo */
+    background-color: #fbeae9;
+}
+
+.project-info-sidebar .info-item.budget .deviation {
+    color: #dc3545;
+    font-weight: bold;
+    font-size: 0.8rem;
+    margin-left: 0.5rem;
+}
+
+.project-gallery .image-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.project-gallery .image-grid img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 6px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.project-gallery .image-grid img:hover {
+    transform: scale(1.03);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* Adaptación para móviles */
+@media (max-width: 800px) {
+    .project-detail-container {
+        padding: 0 1rem;
+        margin-top: 1.5rem;
+    }
+    .project-main-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    .project-title {
+        font-size: 2.2rem;
+    }
+    .project-description h2,
+    .project-info-sidebar h2,
+    .project-gallery h2 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .titulo-principal-ficha { flex-direction: column; text-align: center; gap: 1rem; padding: 1.5rem 1rem; }
+    .titulo-principal-ficha .titulo-texto { text-align: center; order: 1; }
+    .titulo-principal-ficha .casco { order: 2; }
+    .volver-al-mapa-btn { order: 3; width: 100%; justify-content: center; }
+    .titulo-principal-ficha h1 { font-size: 2rem; }
+    .titulo-principal-ficha span { font-size: 1rem; }
 }

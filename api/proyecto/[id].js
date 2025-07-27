@@ -1,7 +1,9 @@
 // Función de ayuda para escapar caracteres HTML y prevenir ataques XSS
 function escapeHtml(unsafe) {
-    if (typeof unsafe !== 'string') return '';
-    return unsafe
+    if (unsafe === null || typeof unsafe === 'undefined') return '';
+    // Si no es un string (ej. un número), lo convertimos antes de escapar
+    const str = String(unsafe);
+    return str
          .replace(/&/g, "&amp;")
          .replace(/</g, "&lt;")
          .replace(/>/g, "&gt;")
@@ -11,14 +13,38 @@ function escapeHtml(unsafe) {
 
 // Función para generar el HTML de la página de detalle. Es más robusta y fácil de mantener.
 function generateProjectPageHTML(project) {
-    const p = project.fields;
+    // --- Helper functions ---
+    const formatCurrency = (num) => num ? `€${num.toLocaleString('es-ES')}` : 'No especificado';
+    
+    // Creamos un objeto "seguro" para evitar XSS, escapando todos los campos.
+    const p_safe = {};
+    for (const key in project.fields) {
+        // Los arrays (como las imágenes) no se escapan, sus URLs se escaparán al usarlas.
+        if (Array.isArray(project.fields[key])) {
+            p_safe[key] = project.fields[key];
+        } else {
+            p_safe[key] = escapeHtml(project.fields[key]);
+        }
+    }
+    const p = p_safe;
+
+    const sobrecoste = project.fields.presupuestoFinal > project.fields.presupuestoInicial;
+    const desviacion = project.fields.presupuestoInicial > 0 ? ((project.fields.presupuestoFinal - project.fields.presupuestoInicial) / project.fields.presupuestoInicial) * 100 : 0;
+
     const title = escapeHtml(`${p.nombre || 'Proyecto'} - Mapa del Pormishuevismo`);
     const description = escapeHtml((p.descripcion || `Ficha del proyecto ${p.nombre || ''}`).substring(0, 160));
     const imageUrl = p.imagen && p.imagen.length > 0
-        ? p.imagen[0].url
+        ? escapeHtml(p.imagen[0].url)
         : 'https://pormishuevismo.vercel.app/assets/images/pormishuevismo-social-share.png';
 
     // Generamos el HTML de la página dinámicamente
+    let textoObras = 'No especificado';
+    if (p.añoInicio) {
+        textoObras = `${p.añoInicio} - ${p.añoFin || 'Actualidad'}`;
+    }
+
+    const disclaimerPresupuesto = `<span class="cifra-estimada-info" title="Estas cifras son estimaciones, ya que la transparencia en las cuentas públicas a veces brilla por su ausencia."><i class="bi bi-info-circle"></i></span>`;
+
     return `
         <!DOCTYPE html>
         <html lang="es">
@@ -28,47 +54,77 @@ function generateProjectPageHTML(project) {
             <title>${title}</title>
             <meta name="description" content="${description}...">
             
-            <!-- Open Graph / Social Media Meta Tags -->
             <meta property="og:title" content="${title}">
             <meta property="og:description" content="${description}...">
             <meta property="og:image" content="${imageUrl}">
             <meta property="og:url" content="https://pormishuevismo.vercel.app/proyecto/${project.id}">
-            <meta property="og:type" content="website">
+            <meta property="og:type" content="article">
 
             <link rel="icon" href="/assets/images/favicon.png" type="image/png">
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
             <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-            <style>
-                body { font-family: 'Roboto', sans-serif; line-height: 1.6; margin: 0; background-color: #f4f7f6; color: #333; }
-                .container { max-width: 800px; margin: 2rem auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-                h1 { color: #111; }
-                img { max-width: 100%; height: auto; border-radius: 4px; margin-top: 1rem; }
-                a { color: #007bff; text-decoration: none; }
-                a:hover { text-decoration: underline; }
-                .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
-                .info-item { background: #f9f9f9; padding: 1rem; border-radius: 4px; }
-                .info-item strong { display: block; margin-bottom: 0.25rem; color: #555; }
-                .image-gallery img { margin-bottom: 1rem; }
-            </style>
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+            <link rel="stylesheet" href="/style.css">
         </head>
         <body>
-            <div class="container">
-                <h1>${escapeHtml(p.nombre)}</h1>
-                <p>${escapeHtml(p.descripcion)}</p>
-                
-                <div class="info-grid">
-                    <div class="info-item"><strong>Ubicación</strong> ${escapeHtml(p.ubicacion || 'No especificada')}, ${escapeHtml(p.provincia || '')}</div>
-                    <div class="info-item"><strong>Estado</strong> ${escapeHtml(p.estado || 'No especificado')}</div>
-                    <div class="info-item"><strong>Arquitecto/Artista</strong> ${escapeHtml(p.arquitecto || 'Desconocido')}</div>
-                    <div class="info-item"><strong>Puntuación</strong> ${'🥚'.repeat(p.puntuacion || 0) || 'Sin puntuar'}</div>
+            <header class="titulo-principal-ficha">
+                <div class="casco">
+                    <img src="/assets/images/casco.png" alt="Icono de casco de obra">
+                </div>
+                <div class="titulo-texto">
+                    <h1>PORMISHUEVISMO</h1>
+                    <span>El Legado Arquitectónico</span>
+                </div>
+                <a href="/" class="volver-al-mapa-btn" title="Volver al mapa principal">
+                    <i class="bi bi-arrow-left-circle"></i>
+                    <span>Volver al Mapa</span>
+                </a>
+            </header>
+
+            <main class="project-detail-container">
+                <h1 class="project-title">${p.nombre}</h1>
+                <p class="project-location">${p.ubicacion || 'Ubicación no especificada'}, ${p.provincia || ''}</p>
+
+                <div class="project-main-content">
+                    <div class="project-description">
+                        <h2>Descripción</h2>
+                        <p>${(p.descripcion || 'No hay descripción disponible.').replace(/\n/g, '<br>')}</p>
+                    </div>
+                    <div class="project-info-sidebar">
+                        <h2>Detalles</h2>
+                        <div class="info-grid">
+                            <div class="info-item"><strong><i class="bi bi-building"></i> Estado</strong> ${p.estado || 'No especificado'}</div>
+                            <div class="info-item"><strong><i class="bi bi-person"></i> Arquitecto/Artista</strong> ${p.arquitecto || 'Desconocido'}</div>
+                            <div class="info-item"><strong><i class="bi bi-calendar-range"></i> Obras</strong> ${textoObras}</div>
+                            <div class="info-item"><strong><i class="bi bi-egg-fried"></i> Puntuación</strong> ${'🥚'.repeat(project.fields.puntuacion || 0) || 'Sin puntuar'}</div>
+                            <div class="info-item budget">
+                                <strong><i class="bi bi-cash-coin"></i> Presupuesto Inicial${disclaimerPresupuesto}</strong>
+                                <span>${formatCurrency(project.fields.presupuestoInicial)}</span>
+                            </div>
+                            <div class="info-item budget ${sobrecoste ? 'over-budget' : ''}">
+                                <strong><i class="bi bi-graph-up-arrow"></i> Presupuesto Final${disclaimerPresupuesto}</strong>
+                                <span>${formatCurrency(project.fields.presupuestoFinal)}</span>
+                                ${sobrecoste ? `<small class="deviation">(+${desviacion.toFixed(0)}%)</small>` : ''}
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="image-gallery">
-                    ${p.imagen ? p.imagen.map(img => `<img src="${escapeHtml(img.url)}" alt="Imagen de ${escapeHtml(p.nombre)}">`).join('') : '<p>No hay imágenes disponibles.</p>'}
+                <div class="project-gallery">
+                    <h2>Galería de Imágenes</h2>
+                    <div class="image-grid">
+                        ${p.imagen ? p.imagen.map(img => `<a href="${escapeHtml(img.url)}" target="_blank" rel="noopener noreferrer"><img src="${escapeHtml(img.url)}" alt="Imagen de ${p.nombre}"></a>`).join('') : '<p>No hay imágenes disponibles.</p>'}
+                    </div>
                 </div>
+            </main>
 
-                <hr style="margin: 2rem 0;">
-                <a href="/">← Volver al mapa</a>
-            </div>
+            <footer>
+                <a href="https://mendiak.github.io/portfolio/" target="_blank" rel="noopener noreferrer" title="Portfolio de Mikel Aramendia"><i class="bi bi-code-slash" aria-hidden="true"></i> Una web de Mikel Aramendia</a>
+                <a href="https://github.com/Mendiak/pormishuevismo" target="_blank" rel="noopener noreferrer" title="Ver el código fuente en GitHub"><i class="bi bi-github" aria-hidden="true"></i> Ver en GitHub</a>
+                <a href="https://airtable.com/appKVW43s8ln8paHH/pagH805tE1RXU8V9y/form" target="_blank" rel="noopener noreferrer" title="Añade un nuevo punto al mapa" class="footer-cta"><i class="bi bi-plus-circle" aria-hidden="true"></i> Añadir un proyecto</a>
+                <a href="https://www.oficinaperiferia.com/" target="_blank" rel="noopener noreferrer" title="Web de Erik Harley"><i class="bi bi-lightbulb" aria-hidden="true"></i> Inspirado por Erik Harley</a>
+            </footer>
         </body>
         </html>
     `;
@@ -90,26 +146,25 @@ export default async function handler(request, response) {
         });
 
         if (airtableResponse.status === 404) {
-            return response.status(404).send('<h1>404 - Proyecto no encontrado</h1><p>El proyecto que buscas no existe o ha sido eliminado.</p><a href="/">Volver al mapa</a>');
+            return response.status(404).setHeader('Content-Type', 'text/html').send('<h1>404 - Proyecto no encontrado</h1><p>El proyecto que buscas no existe o ha sido eliminado.</p><a href="/">Volver al mapa</a>');
         }
 
         if (!airtableResponse.ok) {
             const errorBody = await airtableResponse.text();
             console.error("Error from Airtable API:", errorBody);
-            throw new Error(`Error desde Airtable: ${airtableResponse.statusText}`);
+            throw new Error(`Error desde Airtable: ${airtableResponse.statusText}. Detalles: ${errorBody}`);
         }
 
         const project = await airtableResponse.json();
         
         const html = generateProjectPageHTML(project);
 
-        response.setHeader('Content-Type', 'text/html');
         // Cache de 1h, y si está caducada, se sirve la versión antigua hasta 1 semana mientras se revalida en segundo plano.
         response.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=604800');
-        return response.status(200).send(html);
+        return response.status(200).setHeader('Content-Type', 'text/html').send(html);
 
     } catch (error) {
         console.error(error);
-        return response.status(500).json({ error: 'No se pudo generar la página del proyecto.' });
+        return response.status(500).setHeader('Content-Type', 'text/html').send('<h1>500 - Error del servidor</h1><p>No se pudo generar la página del proyecto.</p>');
     }
 }

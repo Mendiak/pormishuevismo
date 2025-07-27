@@ -154,6 +154,46 @@ function aplicarFiltrosDesdeURL() {
     setValue('sort-direction', 'dir');
 }
 
+/**
+ * Gestiona la copia de una URL al portapapeles y da feedback al usuario.
+ * @param {HTMLElement} button - El botón que se ha pulsado.
+ * @param {string} url - La URL a copiar.
+ */
+function copiarEnlace(button, url) {
+    navigator.clipboard.writeText(url).then(() => {
+        const originalContent = button.innerHTML;
+        button.innerHTML = '¡Copiado!';
+        button.disabled = true;
+        setTimeout(() => {
+            button.innerHTML = originalContent;
+            button.disabled = false;
+        }, 2000); // Resetea el botón tras 2 segundos
+    }).catch(err => {
+        console.error('Error al copiar el enlace: ', err);
+        alert('No se pudo copiar el enlace.');
+    });
+}
+// Hacemos la función global para que sea accesible desde el HTML insertado dinámicamente
+window.copiarEnlace = copiarEnlace;
+
+function generarHtmlCompartir(proyecto) {
+    const url = `${window.location.origin}/proyecto/${proyecto.id}`;
+    const texto = `¡Echa un vistazo a este proyecto del mapa del Pormishuevismo: ${proyecto.nombre}!`;
+    const urlCodificada = encodeURIComponent(url);
+    const textoCodificado = encodeURIComponent(texto);
+
+    return `
+        <div class="share-container">
+            <div class="share-buttons">
+                <a href="https://twitter.com/intent/tweet?url=${urlCodificada}&text=${textoCodificado}" target="_blank" rel="noopener noreferrer" class="share-btn twitter" title="Compartir en X/Twitter"><i class="bi bi-twitter-x"></i></a>
+                <a href="https://www.facebook.com/sharer/sharer.php?u=${urlCodificada}" target="_blank" rel="noopener noreferrer" class="share-btn facebook" title="Compartir en Facebook"><i class="bi bi-facebook"></i></a>
+                <a href="https://api.whatsapp.com/send?text=${textoCodificado}%20${urlCodificada}" target="_blank" rel="noopener noreferrer" class="share-btn whatsapp" title="Compartir en WhatsApp"><i class="bi bi-whatsapp"></i></a>
+                <button onclick="copiarEnlace(this, '${url}')" class="share-btn copy-link" title="Copiar enlace"><i class="bi bi-clipboard"></i></button>
+            </div>
+        </div>
+    `;
+}
+
 function cargarPuntos() {
     // Leer todos los valores de los filtros y ordenación desde el DOM
     const filtroProvincia = document.getElementById('provincia-select').value;
@@ -257,19 +297,22 @@ function cargarPuntos() {
             textoObras = `<strong>Obras:</strong> ${p.añoInicio} - ${fin}<br>`;
         }
 
+        const disclaimerPresupuesto = `<span class="cifra-estimada-info" title="Estas cifras son estimaciones, ya que la transparencia en las cuentas públicas a veces brilla por su ausencia."><i class="bi bi-info-circle"></i></span>`;
+
         const popupContent = `
             <div class="popup-content">
                 <strong>${p.nombre}</strong><br>
                 ${p.ubicacion ? `<div class="popup-location-line"><strong>Ubicación:</strong> ${p.ubicacion}</div>` : ''}
                 <div class="imagen-placeholder"><img src="${p.imagenes.length > 0 ? p.imagenes[0] : 'https://via.placeholder.com/300'}" alt="Imagen de ${p.nombre}" width="100%"></div>
                 <div class="popup-descripcion">${p.descripcion}</div>
-                <strong>Presupuesto inicial:</strong> €${p.presupuestoInicial.toLocaleString()}<br>
-                <strong>Presupuesto final:</strong> <span style="${estiloPresupuestoFinal}">€${p.presupuestoFinal.toLocaleString()}</span>${textoDesviacion}<br>
+                <strong>Presupuesto inicial:${disclaimerPresupuesto}</strong> €${p.presupuestoInicial.toLocaleString()}<br>
+                <strong>Presupuesto final:${disclaimerPresupuesto}</strong> <span style="${estiloPresupuestoFinal}">€${p.presupuestoFinal.toLocaleString()}</span>${textoDesviacion}<br>
                 <strong>Arquitecto/Artista:</strong> ${p.arquitecto}<br>
                 ${textoObras}
                 <strong>Pormishuevismo:</strong> ${renderPuntuacion(p.puntuacion)}<br>
                 <strong>Coordenadas:</strong> ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}<br>
-                <a href="/proyecto/${p.id}" target="_blank">Ver ficha completa</a>
+                <a href="/proyecto/${p.id}" class="ficha-completa-btn" target="_blank"><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i> Ver ficha completa</a>
+                ${generarHtmlCompartir(p)}
             </div>
         `;
         // Creamos el marcador pero NO lo añadimos al mapa directamente, sino al array
@@ -324,13 +367,17 @@ function cargarPuntos() {
             <div class="punto-detalles" id="detalles-${p.id}" role="region">
                 ${thumbnailsHTML}
                 <div class="datos-punto">
-                    <strong><i class="bi bi-cash-coin" aria-hidden="true"></i> Presupuesto inicial:</strong> €${p.presupuestoInicial.toLocaleString()}<br>
-                    <strong><i class="bi bi-cash-coin" aria-hidden="true"></i> Presupuesto final:</strong> <span style="${estiloPresupuestoFinal}">€${p.presupuestoFinal.toLocaleString()}</span>${textoDesviacion}<br>
+                    <strong><i class="bi bi-cash-coin" aria-hidden="true"></i> Presupuesto inicial:${disclaimerPresupuesto}</strong> €${p.presupuestoInicial.toLocaleString()}<br>
+                    <strong><i class="bi bi-cash-coin" aria-hidden="true"></i> Presupuesto final:${disclaimerPresupuesto}</strong> <span style="${estiloPresupuestoFinal}">€${p.presupuestoFinal.toLocaleString()}</span>${textoDesviacion}<br>
                     <strong>Arquitecto:</strong> ${p.arquitecto}<br>
                     ${textoObras}
                     <div class="estado-linea ${claseCss}"><strong><i class="bi ${icono}" aria-hidden="true"></i> Estado:</strong> ${texto}</div>
                     <strong>Pormishuevismo:</strong> ${renderPuntuacion(p.puntuacion)}<br>
                     <strong><i class="bi bi-geo-alt" aria-hidden="true"></i> Coordenadas:</strong> ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}<br>
+                    <a href="/proyecto/${p.id}" class="ficha-completa-btn" target="_blank" title="Ver la ficha completa de ${p.nombre}">
+                        <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i> Ver ficha completa
+                    </a>
+                    ${generarHtmlCompartir(p)}
                 </div>
             </div>
         `;
@@ -380,24 +427,33 @@ function cargarPuntos() {
             });
         });
 
-        div.addEventListener('mouseover', () => {
+        let popupOpenTimeout; // Para el retraso al abrir el popup
+
+        // Usamos mouseenter/mouseleave que son más eficientes para este caso
+        div.addEventListener('mouseenter', () => {
             if (marker._icon) { // Asegurarnos de que el icono del marcador existe
                 marker._icon.classList.add('marker-highlight');
             }
+            // Abrir el popup con un pequeño retraso para no ser intrusivo
+            popupOpenTimeout = setTimeout(() => {
+                marker.openPopup();
+            }, 500); // 500ms de retraso
         });
 
-        div.addEventListener('mouseout', () => {
+        div.addEventListener('mouseleave', () => {
+            clearTimeout(popupOpenTimeout); // Cancelar la apertura si el ratón sale antes
             if (marker._icon) {
                 marker._icon.classList.remove('marker-highlight');
+            }
+            // Solo cerramos el popup si no es el marcador activo (seleccionado con clic)
+            if (activeMarker !== marker) {
+                marker.closePopup();
             }
         });
 
         marker.on('mouseover', () => {
             div.classList.add('punto-highlight');
-        });
-
-        marker.on('mouseout', () => {
-            div.classList.remove('punto-highlight');
+            marker.openPopup(); // En el mapa, la acción es más directa, abrimos sin retraso
         });
 
         marker.on('click', () => {
