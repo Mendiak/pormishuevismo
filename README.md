@@ -8,8 +8,10 @@
     <a href="https://pormishuevismo.vercel.app/"><strong>Ver Demo »</strong></a>
   </p>
   <br>
-    <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fmendiak%2Fpormishuevismo&env=AIRTABLE_BASE_ID,AIRTABLE_TABLE_ID,AIRTABLE_API_TOKEN&envDescription=Necesitas%20tus%20credenciales%20de%20Airtable%20para%20que%20la%20app%20funcione."><img src="https://vercel.com/button" alt="Deploy with Vercel"/></a>
-    <img src="https://img.shields.io/github/license/mendiak/pormishuevismo?style=for-the-badge" alt="Licencia">
+  <p>
+    <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FMendiak%2Fpormishuevismo&env=AIRTABLE_BASE_ID,AIRTABLE_TABLE_ID,AIRTABLE_API_TOKEN&envDescription=Necesitas%20tus%20credenciales%20de%20Airtable%20para%20que%20la%20app%20funcione."><img src="https://vercel.com/button" alt="Deploy with Vercel"/></a>
+    <a href="LICENSE"><img src="https://img.shields.io/github/license/Mendiak/pormishuevismo?style=for-the-badge" alt="Licencia MIT"></a>
+  </p>
 </div>
 
 ---

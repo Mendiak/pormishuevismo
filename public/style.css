@@ -798,12 +798,11 @@ footer a:hover {
 @keyframes popup-fade-in {
   from {
     opacity: 0;
-    transform: scale(0.9) translateY(20px); /* Aumentamos el desplazamiento y reducimos la escala inicial */
-
+    transform: translateY(15px); /* Un sutil desplazamiento hacia arriba */
   }
   to {
     opacity: 1;
-    transform: scale(1) translateY(0);
+    transform: translateY(0);
   }
 }
 
@@ -830,10 +829,18 @@ footer a:hover {
   padding-right: 10px; /* Espacio extra para que el scroll no tape el texto */
 }
 
-/* Aplicamos la animación al popup entero */
+/*
+  La animación se aplica a los elementos INTERNOS del popup, no al contenedor principal.
+  Esto evita conflictos con el posicionamiento de Leaflet, que usa 'transform' en el contenedor.
+*/
+.custom-popup .leaflet-popup-content-wrapper,
+.custom-popup .leaflet-popup-tip-container {
+    animation: popup-fade-in 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+/* Quitamos la animación del contenedor principal para no interferir con el posicionamiento de Leaflet */
 .custom-popup.leaflet-popup {
     transform-origin: bottom center; /* La animación de escala se origina desde la punta */
-    animation: popup-fade-in 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Hacemos la animación más larga y con una curva más expresiva */
 }
 
 /* Clase para la descripción dentro del popup */
