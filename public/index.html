@@ -69,6 +69,7 @@
               <div class="fila-controles-superior">
                 <div class="busqueda-wrapper">
                   <input type="text" id="search-input" placeholder="Buscar por nombre, descripción..." aria-label="Buscar puntos por nombre o descripción">
+                  <button id="clear-search-button" class="clear-search-btn" title="Limpiar búsqueda" aria-label="Limpiar búsqueda"><i class="bi bi-x-circle-fill" aria-hidden="true"></i></button>
                   <button id="search-button" title="Buscar" aria-label="Buscar"><i class="bi bi-search" aria-hidden="true"></i></button>
                   <button id="reset-filters" title="Reiniciar filtros" aria-label="Reiniciar filtros" disabled><i class="bi bi-arrow-clockwise" aria-hidden="true"></i></button>
                 </div>
@@ -108,7 +109,7 @@
                 </div>
               </div>
               <!-- Conteo de resultados -->
-              <span class="conteo-resultados">Mostrando: <strong id="conteo-puntos"></strong></span>
+              <span class="conteo-resultados" aria-live="polite">Mostrando: <strong id="conteo-puntos"></strong></span>
             </fieldset>
           </div>
         </div>

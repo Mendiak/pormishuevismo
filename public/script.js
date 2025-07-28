@@ -204,6 +204,9 @@ function cargarPuntos() {
     const sortBy = document.getElementById('sort-by').value;
     const sortDirection = document.getElementById('sort-direction').value;
 
+    // Actualizamos el estilo visual de los filtros <select>
+    actualizarEstilosFiltros();
+
     // --- Actualizar la URL con los filtros actuales ---
     const params = new URLSearchParams();
     if (filtroProvincia !== 'todas') params.set('provincia', filtroProvincia);
@@ -575,6 +578,7 @@ function checkFiltersState() {
     const estado = document.getElementById('estado-select').value;
     const texto = document.getElementById('search-input').value;
     const resetBtn = document.getElementById('reset-filters');
+    const clearSearchBtn = document.getElementById('clear-search-button');
 
     const isAnyFilterActive =
         provincia !== 'todas' ||
@@ -585,6 +589,11 @@ function checkFiltersState() {
 
     // El botón se activa si 'isAnyFilterActive' es true.
     resetBtn.disabled = !isAnyFilterActive;
+
+    // Muestra u oculta el botón de limpiar búsqueda
+    if (clearSearchBtn) {
+        clearSearchBtn.style.display = texto.trim() !== '' ? 'block' : 'none';
+    }
 }
 
 /**
@@ -651,6 +660,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const sidebar = document.getElementById('sidebar');
     sidebarOverlay = document.getElementById('sidebar-overlay');
     const toggleBtn = document.getElementById('sidebar-toggle');
+    const clearSearchBtn = document.getElementById('clear-search-button');
     const backToTopBtn = document.getElementById('back-to-top-btn');
 
     // Configuración de capas del mapa
@@ -800,6 +810,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     // El botón de búsqueda sigue funcionando para una acción explícita e inmediata
     document.getElementById('search-button').addEventListener('click', cargarPuntos);
     
+    // Listener para el botón de limpiar búsqueda
+    if (clearSearchBtn) {
+        clearSearchBtn.addEventListener('click', () => {
+            const searchInput = document.getElementById('search-input');
+            searchInput.value = '';
+            // Disparamos el evento 'input' para que se ejecute la búsqueda con debounce
+            searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+        });
+    }
+
     mapLayerSelect.addEventListener("change", function() {
         const selectedLayerName = this.value;
         for (const layerName in mapLayers) {
@@ -823,11 +843,28 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         cargarPuntos();
         // Tras reiniciar, volvemos a comprobar el estado para desactivar el botón
+        actualizarEstilosFiltros();
         checkFiltersState();
     });
 
     // Carga inicial de datos
     await cargarDatosDesdeAirtable(); 
+    actualizarEstilosFiltros(); // Aplicamos estilos a los filtros cargados desde URL
     checkFiltersState(); // Comprobamos el estado inicial de los filtros
 
 });
+
+/**
+ * Añade o quita la clase .filtro-activo a los selectores de filtro según su valor.
+ */
+function actualizarEstilosFiltros() {
+    const provincia = document.getElementById('provincia-select');
+    const tipo = document.getElementById('tipo-select');
+    const puntuacion = document.getElementById('puntuacion-select');
+    const estado = document.getElementById('estado-select');
+
+    provincia.classList.toggle('filtro-activo', provincia.value !== 'todas');
+    tipo.classList.toggle('filtro-activo', tipo.value !== 'todos');
+    puntuacion.classList.toggle('filtro-activo', puntuacion.value !== 'todos');
+    estado.classList.toggle('filtro-activo', estado.value !== 'todos');
+}

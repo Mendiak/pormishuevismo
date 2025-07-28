@@ -21,7 +21,7 @@
 body {
       margin: 0;
       display: flex;
-      flex-direction: column; /* Apila el main-container y el footer verticalmente */
+      flex-direction: column; 
       height: 100vh;
       font-family: 'Roboto', sans-serif;
       background: white;
@@ -49,7 +49,7 @@ body {
   width: 40%;
   padding: 1rem;
   overflow-y: auto;
-  background: #f4f7f6; /* Un fondo más claro para que las cards destaquen */
+  background: #f4f7f6; 
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -59,9 +59,8 @@ body {
 .titulo-principal {
     background-color: #000000; 
     color: white;  
-    padding: 1.5rem; /* Ajustamos padding para el nuevo layout */
+    padding: 1.5rem; 
     margin: -1rem -1rem 1.5rem -1rem; 
-    /* Convertimos a Flexbox para un control de layout robusto */
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -83,14 +82,13 @@ body {
 }
 
 .casco {
-    /* Ya no necesita posicionamiento absoluto */
-    flex-shrink: 0; /* Evita que el casco se encoja si no hay espacio */
+  flex-shrink: 0;
 }
 
 .casco img {
-    height: 100px; /* Ajustamos un poco el tamaño para que no sea tan grande */
+    height: 100px; 
     transition: transform 0.3s ease-in-out;
-    display: block; /* Mejora la consistencia del layout */
+    display: block; 
 }
 
 .casco img:hover {
@@ -126,13 +124,14 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1.5rem; /* Aumentamos el espacio entre búsqueda y ordenación */
+  gap: 1.5rem; 
   flex-wrap: wrap; /* Permite que se apilen en pantallas muy pequeñas */
 }
 
 .busqueda-wrapper {
   display: flex;
   flex-grow: 1; /* Hace que la barra de búsqueda ocupe el espacio disponible */
+  position: relative; /* Necesario para posicionar el botón de limpiar */
 }
 
 .busqueda-wrapper input {
@@ -153,6 +152,7 @@ body {
     flex: 1;
     padding: 0.5rem;
     border: 1px solid #ccc; 
+    padding-right: 2.5rem; /* Espacio para el botón de limpiar */
     font-size: 0.9rem;
     min-width: 0; /* Fix for flexbox overflow */
 }
@@ -163,7 +163,7 @@ body {
   background-color: #f0f0f0;
   cursor: pointer;
   color: #333;
-  font-size: 1rem; /* Icon size */
+  font-size: 1rem; 
   display: flex;
   align-items: center;
   justify-content: center;
@@ -174,6 +174,25 @@ body {
   border-color: var(--color-accent);
   color: #000;
 }
+
+/* Estilo para el nuevo botón de limpiar búsqueda */
+.clear-search-btn {
+  position: absolute;
+  right: 82px; 
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font-size: 1.1rem;
+  color: #888;
+  cursor: pointer;
+  display: none; 
+  line-height: 1;
+}
+
+.clear-search-btn:hover { color: #000; }
 
 #reset-filters:disabled,
 #reset-filters:disabled:hover {
@@ -187,7 +206,7 @@ body {
 #filtros { /* Reduced gap between filter elements */
   display: flex;
   gap: 1rem;
-  margin-bottom: 0.5rem; /* Reduced margin */
+  margin-bottom: 0.5rem; 
 }
 
 .filtro {
@@ -196,7 +215,7 @@ body {
 
 .filtro label {
   display: block;
-  margin-bottom: 0.25rem;  /* Reduced margin */
+  margin-bottom: 0.25rem; 
   font-weight: bold;
 }
 
@@ -204,7 +223,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.8rem; /* Mantenemos el padding aquí */
+  padding: 0.8rem; 
 }
 
 .punto-titulo {
@@ -222,7 +241,7 @@ body {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.4s ease-in-out;
-  padding: 0 0.8rem; /* Padding horizontal para alinear con la cabecera */
+  padding: 0 0.8rem; 
 }
 
 /* Animación para la carga escalonada de las cards */
@@ -243,13 +262,13 @@ body {
   flex-direction: column;
   margin-bottom: 1rem;
   background: #fff;
-  border-radius: 8px; /* Esquinas redondeadas para el efecto card */
-  box-shadow: 0 2px 5px rgba(0,0,0,0.08); /* Sombra sutil para dar profundidad */
-  transition: box-shadow 0.3s ease, transform 0.3s ease; /* Transición suave */
-  overflow: hidden; /* Asegura que el contenido respete las esquinas redondeadas */
+  border-radius: 8px; 
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  overflow: hidden; 
   /* Propiedades para la animación de entrada */
-  opacity: 0; /* Empieza invisible para que la animación funcione */
-  animation: fadeInUp 0.4s ease-out forwards; /* 'forwards' mantiene el estado final */
+  opacity: 0; 
+  animation: fadeInUp 0.4s ease-out forwards; 
 }
 
 /* Se resalta tanto al pasar el ratón por encima como al hacerlo sobre el marcador */
@@ -326,11 +345,11 @@ body {
 
 .cifra-estimada-info {
     margin-left: 0.4rem;
-    color: #6c757d; /* Un gris estándar */
+    color: #6c757d; 
     cursor: help;
     font-size: 0.9rem;
     display: inline-flex;
-    vertical-align: middle; /* Alinea el icono con el texto */
+    vertical-align: middle; 
 }
 
 .ficha-completa-btn {
@@ -351,7 +370,7 @@ body {
 }
 
 .ficha-completa-btn:hover {
-    background-color: #ffda6a; /* A lighter yellow */
+    background-color: #ffda6a; 
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
@@ -392,27 +411,17 @@ body {
 .share-btn.twitter { background-color: #000000; }
 .share-btn.facebook { background-color: #1877F2; }
 .share-btn.whatsapp { background-color: #25D366; }
-.share-btn.copy-link { background-color: #6c757d; } /* Gris de Bootstrap */
+.share-btn.copy-link { background-color: #6c757d; } 
 
 .share-btn.copy-link:disabled {
-    background-color: #198754; /* Verde éxito */
+    background-color: #198754;
     cursor: default;
     transform: none;
     opacity: 1;
 }
 
 .share-btn.copy-link:disabled i {
-    display: none; /* Oculta el icono de portapapeles al copiar */
-}
-
-/* --- Fix de especificidad para los botones de compartir dentro del popup --- */
-/* Leaflet puede tener estilos por defecto que interfieren. Con esta regla
-   nos aseguramos de que nuestros estilos para compartir se apliquen correctamente
-   también dentro de los popups del mapa. */
-.custom-popup .share-container {
-    border-top: 1px solid #e0e0e0;
-    padding-top: 0.75rem;
-    margin-top: 1rem;
+    display: none; 
 }
 
 select {
@@ -432,7 +441,7 @@ select {
   transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
 
-select:focus { /* Subtle focus style */
+select:focus { 
   border-color: #aaa;
   outline: none;              
   box-shadow: none;           
@@ -467,25 +476,25 @@ select:focus { /* Subtle focus style */
 .estado-linea {
     display: flex;
     align-items: center;
-    gap: 0.5rem; /* Espacio entre icono y texto */
+    gap: 0.5rem; 
 }
 
 .estado-finalizado .bi {
-    color: #198754; /* Verde */
+    color: #198754;
 }
 
 .estado-en-construccion .bi {
-    color: #ffc107; /* Naranja/Amarillo */
+    color: #ffc107; 
 }
 
 .estado-paralizado .bi {
-    color: #dc3545; /* Rojo */
+    color: #dc3545;
 }
 
 .modal {
   display: none;
   position: fixed;
-  z-index: 2000; /* Aumentamos el z-index para que se muestre por encima de todo */
+  z-index: 2000; 
   left: 0;
   top: 0;
   width: 100%;
@@ -501,7 +510,7 @@ select:focus { /* Subtle focus style */
   display: block;
   max-width: 80%;
   max-height: 80%;
-  object-fit: contain; /* Ensure the whole image is visible */
+  object-fit: contain; 
 }
 
 .close {
@@ -588,6 +597,13 @@ select:focus { /* Subtle focus style */
     border-color: var(--color-accent); 
     box-shadow: 0 0 5px rgba(var(--color-accent-rgb), 0.6); 
     outline: none; 
+}
+
+/* Estilo para los select de filtros cuando están activos */
+.filtro select.filtro-activo {
+  border-left: 4px solid var(--color-accent);
+  /* Ajustamos el padding para que el texto no se desplace */
+  padding-left: calc(0.7rem - 4px);
 }
 
 .leyenda-mapa {
@@ -987,6 +1003,27 @@ footer a:hover {
     pointer-events: none; /* Permite hacer clic a través del degradado */
     z-index: 10; /* Asegura que esté por encima del contenido */
     border-radius: 0 0 8px 8px; /* Para que coincida con las esquinas redondeadas del popup */
+}
+
+/*
+  Fix de especificidad para los enlaces dentro del popup del mapa.
+  Leaflet o los estilos por defecto del navegador pueden sobreescribir los colores
+  de los enlaces (<a>), haciendo que se vean azules en lugar del color deseado.
+  Estas reglas aumentan la especificidad para asegurar que nuestros estilos se apliquen.
+*/
+.custom-popup .share-container {
+    border-top: 1px solid #e0e0e0;
+    padding-top: 0.75rem;
+    margin-top: 1rem;
+}
+
+.custom-popup .ficha-completa-btn,
+.custom-popup .ficha-completa-btn:hover {
+    color: #000; /* Asegura que el texto del botón sea negro */
+}
+
+.custom-popup .share-btn {
+    color: #fff; /* Asegura que los iconos de compartir sean blancos */
 }
 
 /* --- Estilos para la cabecera en las fichas de proyecto --- */
