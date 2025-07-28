@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/images/casco.png" alt="Icono de casco de obra" width="150"/>
+  <img src="public/assets/images/casco.pngassets/images/casco.png" alt="Icono de casco de obra" width="150"/>
   <h1>Mapa del Pormishuevismo</h1>
   <p>
     Un mapa interactivo que documenta y celebra un movimiento artístico-arquitectónico singular por toda España.
