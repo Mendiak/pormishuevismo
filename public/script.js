@@ -155,25 +155,47 @@ function aplicarFiltrosDesdeURL() {
 }
 
 /**
+ * Muestra un toast flotante con mensaje de éxito o error.
+ * @param {string} mensaje 
+ * @param {'success'|'error'} tipo 
+ */
+function showToast(mensaje, tipo = 'success') {
+  const toastContainer = document.getElementById('toast-container');
+  if (!toastContainer) return;
+  const toast = document.createElement('div');
+  toast.className = 'toast-message' + (tipo === 'error' ? ' toast-error' : '');
+  toast.textContent = mensaje;
+  toastContainer.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 400);
+  }, 2200);
+}
+
+/**
  * Gestiona la copia de una URL al portapapeles y da feedback al usuario.
  * @param {HTMLElement} button - El botón que se ha pulsado.
  * @param {string} url - La URL a copiar.
  */
 function copiarEnlace(button, url) {
-    navigator.clipboard.writeText(url).then(() => {
-        const originalContent = button.innerHTML;
-        button.innerHTML = '¡Copiado!';
-        button.disabled = true;
-        setTimeout(() => {
-            button.innerHTML = originalContent;
-            button.disabled = false;
-        }, 2000); // Resetea el botón tras 2 segundos
-    }).catch(err => {
-        console.error('Error al copiar el enlace: ', err);
-        alert('No se pudo copiar el enlace.');
-    });
+  if (!button) return;
+  navigator.clipboard.writeText(url).then(() => {
+    // Tooltip
+    let tooltip = document.createElement('span');
+    tooltip.className = 'copy-tooltip';
+    tooltip.textContent = '¡Enlace copiado!';
+    button.appendChild(tooltip);
+    setTimeout(() => tooltip.remove(), 1200);
+    // Toast
+    showToast('Enlace copiado al portapapeles');
+    // Cambio de texto temporal (opcional)
+    const original = button.innerHTML;
+    button.innerHTML = '<i class="bi bi-clipboard-check"></i>';
+    setTimeout(() => { button.innerHTML = original; }, 1200);
+  }).catch(() => {
+    showToast('No se pudo copiar el enlace', 'error');
+  });
 }
-// Hacemos la función global para que sea accesible desde el HTML insertado dinámicamente
 window.copiarEnlace = copiarEnlace;
 
 function generarHtmlCompartir(proyecto) {
@@ -352,7 +374,7 @@ function cargarPuntos() {
         }
 
         // Obtenemos la información del estado para mostrarla con icono y color
-        const { texto, icono, claseCss } = getEstadoInfo(p.estado);
+        const estadoInfo = getEstadoInfo(p.estado); // punto.estado o el campo que uses
 
         div.innerHTML = `
             <div class="punto-cabecera" role="button" tabindex="0" aria-expanded="false" aria-controls="detalles-${p.id}">
@@ -374,7 +396,7 @@ function cargarPuntos() {
                     <strong><i class="bi bi-cash-coin" aria-hidden="true"></i> Presupuesto final:${disclaimerPresupuesto}</strong> <span style="${estiloPresupuestoFinal}">€${p.presupuestoFinal.toLocaleString()}</span>${textoDesviacion}<br>
                     <strong>Arquitecto:</strong> ${p.arquitecto}<br>
                     ${textoObras}
-                    <div class="estado-linea ${claseCss}"><strong><i class="bi ${icono}" aria-hidden="true"></i> Estado:</strong> ${texto}</div>
+                    <div class="estado-linea ${estadoInfo.claseCss}"><strong><i class="bi ${estadoInfo.icono}" aria-hidden="true"></i> Estado:</strong> ${estadoInfo.texto}</div>
                     <strong>Pormishuevismo:</strong> ${renderPuntuacion(p.puntuacion)}<br>
                     <strong><i class="bi bi-geo-alt" aria-hidden="true"></i> Coordenadas:</strong> ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}<br>
                     <a href="/proyecto/${p.id}" class="ficha-completa-btn" target="_blank" title="Ver la ficha completa de ${p.nombre}">
@@ -425,8 +447,8 @@ function cargarPuntos() {
         thumbnailImages.forEach((img, index) => {
             img.addEventListener('click', (e) => {
                 e.stopPropagation(); // Evita que se dispare el evento click del contenedor .punto
-                modalImg.src = p.imagenes[index]; // Usa la URL original de la imagen clickada
-                modal.style.display = "flex"; // Cambiado a flex para que el centrado de CSS funcione
+                modalImg.src = p.imagenes[index]; // Usa la URL original de la imagen clicada                
+                modal.showModal(); // Usamos el método nativo para mostrar el diálogo
             });
         });
 
@@ -656,7 +678,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Elementos del Modal
     modal = document.getElementById("image-modal");
     modalImg = document.getElementById("modal-image");
-    closeBtn = document.querySelector("#image-modal .close");
+    // El botón de cierre ahora funciona automáticamente gracias a <form method="dialog">
     const sidebar = document.getElementById('sidebar');
     sidebarOverlay = document.getElementById('sidebar-overlay');
     const toggleBtn = document.getElementById('sidebar-toggle');
@@ -768,15 +790,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    // Listeners para cerrar el modal
-    closeBtn.addEventListener('click', () => {
-        modal.style.display = "none";
-    });
-
-    // Cierra el modal si se hace clic en el fondo oscuro
+    // Cierra el modal si se hace clic en el fondo (backdrop)
+    // El comportamiento nativo de <dialog> ya cierra con la tecla Esc.
     modal.addEventListener('click', (e) => {
+        // Si el clic es en el propio elemento <dialog> (el fondo), ciérralo.
+        // Esto evita que se cierre al hacer clic en el contenido (la imagen).
         if (e.target === modal) {
-            modal.style.display = "none";
+            modal.close();
         }
     });
 
@@ -868,3 +888,16 @@ function actualizarEstilosFiltros() {
     puntuacion.classList.toggle('filtro-activo', puntuacion.value !== 'todos');
     estado.classList.toggle('filtro-activo', estado.value !== 'todos');
 }
+
+// Permitir cerrar popups del mapa con Esc
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    if (mapa && mapa.closePopup) mapa.closePopup();
+    // Si tienes modales personalizados:
+    const modal = document.getElementById('image-modal');
+    if (modal && modal.classList.contains('show')) {
+      modal.classList.remove('show');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+  }
+});

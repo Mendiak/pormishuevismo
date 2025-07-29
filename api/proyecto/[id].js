@@ -45,6 +45,21 @@ function generateProjectPageHTML(project) {
 
     const disclaimerPresupuesto = `<span class="cifra-estimada-info" title="Estas cifras son estimaciones, ya que la transparencia en las cuentas públicas a veces brilla por su ausencia."><i class="bi bi-info-circle"></i></span>`;
 
+    const shareUrl = `https://pormishuevismo.vercel.app/proyecto/${project.id}`;
+    const shareHtml = `
+  <div class="share-container">
+    <span>Compartir:</span>
+    <div class="share-buttons">
+      <a class="share-btn twitter" href="https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(p_safe.nombre)}" target="_blank" rel="noopener" aria-label="Compartir en X"><i class="bi bi-twitter-x"></i></a>
+      <a class="share-btn facebook" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}" target="_blank" rel="noopener" aria-label="Compartir en Facebook"><i class="bi bi-facebook"></i></a>
+      <a class="share-btn whatsapp" href="https://wa.me/?text=${encodeURIComponent(p_safe.nombre + ' ' + shareUrl)}" target="_blank" rel="noopener" aria-label="Compartir en WhatsApp"><i class="bi bi-whatsapp"></i></a>
+      <button id="copy-link-btn" class="share-btn copy-link" aria-label="Copiar enlace">
+  <i class="bi bi-link-45deg"></i>
+</button>
+    </div>
+  </div>
+`;
+
     return `
         <!DOCTYPE html>
         <html lang="es">
@@ -117,6 +132,8 @@ function generateProjectPageHTML(project) {
                         ${p.imagen ? p.imagen.map(img => `<a href="${escapeHtml(img.url)}" target="_blank" rel="noopener noreferrer"><img src="${escapeHtml(img.url)}" alt="Imagen de ${p.nombre}"></a>`).join('') : '<p>No hay imágenes disponibles.</p>'}
                     </div>
                 </div>
+
+                ${shareHtml}
             </main>
 
             <footer>
@@ -125,6 +142,23 @@ function generateProjectPageHTML(project) {
                 <a href="https://airtable.com/appKVW43s8ln8paHH/pagH805tE1RXU8V9y/form" target="_blank" rel="noopener noreferrer" title="Añade un nuevo punto al mapa" class="footer-cta"><i class="bi bi-plus-circle" aria-hidden="true"></i> Añadir un proyecto</a>
                 <a href="https://www.oficinaperiferia.com/" target="_blank" rel="noopener noreferrer" title="Web de Erik Harley"><i class="bi bi-lightbulb" aria-hidden="true"></i> Inspirado por Erik Harley</a>
             </footer>
+            <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const btn = document.getElementById('copy-link-btn');
+    if(btn) {
+      btn.addEventListener('click', function() {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url).then(() => {
+          const icon = btn.querySelector('i');
+          if(icon) icon.className = 'bi bi-clipboard-check';
+          setTimeout(() => {
+            if(icon) icon.className = 'bi bi-link-45deg';
+          }, 1200);
+        });
+      });
+    }
+  });
+</script>
         </body>
         </html>
     `;

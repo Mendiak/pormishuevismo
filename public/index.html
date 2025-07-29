@@ -34,97 +34,116 @@
 
 <body>
   <!-- La nueva cabecera, exclusiva para la versión móvil -->
-  <div id="mobile-header">
-    <button id="sidebar-toggle" class="sidebar-toggle-btn" title="Mostrar/Ocultar filtros" aria-label="Mostrar u ocultar filtros" aria-expanded="false">
-      <div class="hamburger-icon">
+  <header id="mobile-header" role="banner">
+    <button id="sidebar-toggle" class="sidebar-toggle-btn" title="Mostrar/Ocultar filtros" aria-label="Mostrar u ocultar filtros" aria-expanded="false" aria-controls="sidebar">
+      <span class="hamburger-icon" aria-hidden="true">
         <span></span>
         <span></span>
         <span></span>
-      </div>
+      </span>
     </button>
-    <div class="casco"><img src="/assets/images/casco.png" alt="Icono de casco de obra"></div>
+    <div class="casco">
+      <img src="/assets/images/casco.png" alt="Icono de casco de obra">
+    </div>
     <div class="titulo-texto">
       <h1>PORMISHUEVISMO</h1>
       <span>Mapa de un Movimiento Artístico</span>
     </div>
-  </div>
+  </header>
 
-  <div id="main-container">
-    <div id="map">
-      <div id="map-layer-control"><label for="map-layer-select">Estilo:</label><select id="map-layer-select"></select></div>
-    </div>
-    <div id="sidebar">
+  <main id="main-container" role="main">
+    <section id="map" aria-label="Mapa interactivo de proyectos">
+      <div id="map-layer-control">
+        <label for="map-layer-select">Estilo:</label>
+        <select id="map-layer-select" aria-label="Seleccionar estilo de mapa"></select>
+      </div>
+    </section>
+    <aside id="sidebar" aria-label="Panel de filtros y lista de proyectos" tabindex="-1">
       <div class="titulo-principal">
-        <div class="casco"><img src="/assets/images/casco.png" alt="Icono de casco de obra"></div>
+        <div class="casco">
+          <img src="/assets/images/casco.png" alt="Icono de casco de obra">
+        </div>
         <div class="titulo-texto">
           <h1>PORMISHUEVISMO</h1>
           <span>Mapa de un movimiento artístico</span>
         </div>
       </div>
-        <div class="sidebar-content">
-          <div class="controles-wrapper">
-            <fieldset>
-              <legend class="visually-hidden">Controles de búsqueda y filtrado</legend>
-              <!-- Búsqueda y reinicio -->
-              <div class="fila-controles-superior">
-                <div class="busqueda-wrapper">
-                  <input type="text" id="search-input" placeholder="Buscar por nombre, descripción..." aria-label="Buscar puntos por nombre o descripción">
-                  <button id="clear-search-button" class="clear-search-btn" title="Limpiar búsqueda" aria-label="Limpiar búsqueda"><i class="bi bi-x-circle-fill" aria-hidden="true"></i></button>
-                  <button id="search-button" title="Buscar" aria-label="Buscar"><i class="bi bi-search" aria-hidden="true"></i></button>
-                  <button id="reset-filters" title="Reiniciar filtros" aria-label="Reiniciar filtros" disabled><i class="bi bi-arrow-clockwise" aria-hidden="true"></i></button>
-                </div>
-                <div class="sorting-options"><label for="sort-by">Ordenar:</label><select id="sort-by"><option value="nombre">Nombre</option><option value="puntuacion">Puntuación</option><option value="presupuestoFinal">Coste Final</option><option value="provincia">Provincia</option></select><select id="sort-direction"><option value="asc">Asc</option><option value="desc">Desc</option></select></div>
+      <div class="sidebar-content">
+        <div class="controles-wrapper">
+          <fieldset>
+            <legend class="visually-hidden">Controles de búsqueda y filtrado</legend>
+            <!-- Búsqueda y reinicio -->
+            <div class="fila-controles-superior">
+              <div class="busqueda-wrapper">
+                <input type="text" id="search-input" placeholder="Buscar por nombre, descripción..." aria-label="Buscar puntos por nombre o descripción">
+                <button id="clear-search-button" class="clear-search-btn" title="Limpiar búsqueda" aria-label="Limpiar búsqueda"><i class="bi bi-x-circle-fill" aria-hidden="true"></i></button>
+                <button id="search-button" title="Buscar" aria-label="Buscar"><i class="bi bi-search" aria-hidden="true"></i></button>
+                <button id="reset-filters" title="Reiniciar filtros" aria-label="Reiniciar filtros" disabled><i class="bi bi-arrow-clockwise" aria-hidden="true"></i></button>
               </div>
-    
-              <!-- Filtros -->
-              <div id="filtros">
-                <div class="filtro">
-                  <label for="provincia-select">Provincia:</label>
-                  <select id="provincia-select" title="Filtrar por provincia">
-                    <option value="todas">Todas</option>
-                  </select>
-                </div>
-                <div class="filtro">
-                  <label for="tipo-select">Tipo:</label>
-                  <select id="tipo-select" title="Filtrar por tipo">
-                    <option value="todos">Todos</option>
-                  </select>
-                </div>
-                <div class="filtro">
-                  <label for="estado-select">Estado:</label>
-                  <select id="estado-select" title="Filtrar por estado">
-                    <option value="todos">Todos</option>
-                  </select>
-                </div>
-                <div class="filtro">
-                  <label for="puntuacion-select">Puntuación:</label>
-                  <select id="puntuacion-select" title="Filtrar por puntuación">
-                    <option value="todos">Todas</option>
-                    <option value="1">1 🥚</option>
-                    <option value="2">2 🥚🥚</option>
-                    <option value="3">3 🥚🥚🥚</option>
-                    <option value="4">4 🥚🥚🥚🥚</option>
-                    <option value="5">5 🥚🥚🥚🥚🥚</option>
-                  </select>
-                </div>
+              <div class="sorting-options">
+                <label for="sort-by">Ordenar:</label>
+                <select id="sort-by" aria-label="Ordenar por">
+                  <option value="nombre">Nombre</option>
+                  <option value="puntuacion">Puntuación</option>
+                  <option value="presupuestoFinal">Coste Final</option>
+                  <option value="provincia">Provincia</option>
+                </select>
+                <select id="sort-direction" aria-label="Dirección de orden">
+                  <option value="asc">Asc</option>
+                  <option value="desc">Desc</option>
+                </select>
               </div>
-              <!-- Conteo de resultados -->
-              <span class="conteo-resultados" aria-live="polite">Mostrando: <strong id="conteo-puntos"></strong></span>
-            </fieldset>
-          </div>
+            </div>
+            <!-- Filtros -->
+            <div id="filtros" role="region" aria-label="Filtros de proyectos">
+              <div class="filtro">
+                <label for="provincia-select">Provincia:</label>
+                <select id="provincia-select" title="Filtrar por provincia" aria-label="Filtrar por provincia">
+                  <option value="todas">Todas</option>
+                </select>
+              </div>
+              <div class="filtro">
+                <label for="tipo-select">Tipo:</label>
+                <select id="tipo-select" title="Filtrar por tipo" aria-label="Filtrar por tipo">
+                  <option value="todos">Todos</option>
+                </select>
+              </div>
+              <div class="filtro">
+                <label for="estado-select">Estado:</label>
+                <select id="estado-select" title="Filtrar por estado" aria-label="Filtrar por estado">
+                  <option value="todos">Todos</option>
+                </select>
+              </div>
+              <div class="filtro">
+                <label for="puntuacion-select">Puntuación:</label>
+                <select id="puntuacion-select" title="Filtrar por puntuación" aria-label="Filtrar por puntuación">
+                  <option value="todos">Todas</option>
+                  <option value="1">1 🥚</option>
+                  <option value="2">2 🥚🥚</option>
+                  <option value="3">3 🥚🥚🥚</option>
+                  <option value="4">4 🥚🥚🥚🥚</option>
+                  <option value="5">5 🥚🥚🥚🥚🥚</option>
+                </select>
+              </div>
+            </div>
+            <!-- Conteo de resultados -->
+            <span class="conteo-resultados" aria-live="polite">Mostrando: <strong id="conteo-puntos"></strong></span>
+          </fieldset>
         </div>
-      <div class="leyenda-mapa">
+      </div>
+      <div class="leyenda-mapa" role="note">
         <i class="bi bi-info-circle" aria-hidden="true"></i> Haz clic en un proyecto para verlo en el mapa
       </div>
-      <div id="lista-puntos">
+      <div id="lista-puntos" role="list">
       </div>
       <!-- Botón para volver arriba en la lista -->
       <button id="back-to-top-btn" title="Volver arriba" aria-label="Volver arriba">
-        <i class="bi bi-arrow-up-circle-fill" aria-hidden="true"></i></button>
-    </div>
+        <i class="bi bi-arrow-up-circle-fill" aria-hidden="true"></i>
+      </button>
+    </aside>
     <!-- Overlay para la sidebar en móvil -->
-    <div id="sidebar-overlay"></div>
-  </div>
+    <div id="sidebar-overlay" tabindex="-1" aria-hidden="true"></div>
+  </main>
 
   <!-- Loading indicator -->
   <div id="loading-indicator">
@@ -135,6 +154,7 @@
     <span class="close">&times;</span>
     <img class="modal-content" id="modal-image">
   </div>
+  <div id="toast-container" aria-live="polite"></div>
 
   <footer>
     <a href="https://mendiak.github.io/portfolio/" target="_blank" rel="noopener noreferrer" title="Portfolio de Mikel Aramendia">
@@ -142,12 +162,12 @@
     </a>
     <a href="https://github.com/Mendiak/pormishuevismo" target="_blank" rel="noopener noreferrer" title="Ver el código fuente en GitHub">
       <i class="bi bi-github" aria-hidden="true"></i> Ver en GitHub
+    </a>    
+    <a href="https://www.oficinaperiferia.com/" target="_blank" rel="noopener noreferrer" title="Web de Erik Harley">
+      <i class="bi bi-lightbulb" aria-hidden="true"></i> Inspirado por Erik Harley
     </a>
     <a href="https://airtable.com/appKVW43s8ln8paHH/pagH805tE1RXU8V9y/form" target="_blank" rel="noopener noreferrer" title="Añade un nuevo punto al mapa" class="footer-cta">
       <i class="bi bi-plus-circle" aria-hidden="true"></i> Añadir un proyecto
-    </a>
-    <a href="https://www.oficinaperiferia.com/" target="_blank" rel="noopener noreferrer" title="Web de Erik Harley">
-      <i class="bi bi-lightbulb" aria-hidden="true"></i> Inspirado por Erik Harley
     </a>
   </footer>
 

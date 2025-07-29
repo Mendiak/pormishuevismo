@@ -287,6 +287,13 @@ body {
   transform: rotate(180deg);
 }
 
+/* Fondo y sombra más notoria para la card expandida */
+.punto.expandido {
+  background: #fffbe6;
+  box-shadow: 0 6px 24px 0 rgba(255, 193, 7, 0.25), 0 1.5px 6px 0 rgba(0,0,0,0.10);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
 .ubicacion-linea {
     font-size: 0.9rem;
     color: #666;
@@ -316,6 +323,18 @@ body {
 .thumbnail-img:hover {
     transform: scale(1.05);
     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+/* Mejora de la galería: zoom en hover/click */
+.thumbnail-img {
+  transition: transform 0.2s cubic-bezier(.4,2,.6,1), box-shadow 0.2s;
+  cursor: pointer;
+}
+.thumbnail-img:hover,
+.thumbnail-img:focus {
+  transform: scale(1.08);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  z-index: 2;
 }
 
 .imagen-placeholder {
@@ -474,22 +493,15 @@ select:focus {
 }
 
 .estado-linea {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 0.5rem; 
+    gap: 0.3em;
+    font-size: 1.1em;
+    margin-right: 0.5em;
 }
-
-.estado-finalizado .bi {
-    color: #198754;
-}
-
-.estado-en-construccion .bi {
-    color: #ffc107; 
-}
-
-.estado-paralizado .bi {
-    color: #dc3545;
-}
+.estado-finalizado { color: #198754; }
+.estado-en-construccion { color: #fd7e14; }
+.estado-paralizado { color: #dc3545; }
 
 .modal {
   display: none;
@@ -1216,4 +1228,44 @@ footer a:hover {
     .volver-al-mapa-btn { order: 3; width: 100%; justify-content: center; }
     .titulo-principal-ficha h1 { font-size: 2rem; }
     .titulo-principal-ficha span { font-size: 1rem; }
+}
+
+/* Toast notifications */
+#toast-container {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  pointer-events: none;
+}
+.toast-message {
+  background: #222;
+  color: #fff;
+  padding: 0.75em 1.5em;
+  border-radius: 8px;
+  margin-top: 0.5em;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+  opacity: 0.95;
+  font-size: 1rem;
+  animation: fadeInUp 0.3s;
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px);}
+  to { opacity: 0.95; transform: translateY(0);}
+}
+.copy-tooltip {
+  position: absolute;
+  top: -2em;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #222;
+  color: #fff;
+  padding: 0.25em 0.75em;
+  border-radius: 4px;
+  font-size: 0.9em;
+  white-space: nowrap;
+  z-index: 10;
+  opacity: 0.95;
+  pointer-events: none;
 }

@@ -35,9 +35,8 @@ Browse, filter, and marvel at the tales of concrete and (broken) dreams that mak
 *   **🧩 Marcadores Agrupados:** Los marcadores se agrupan automáticamente para una navegación más limpia (`Leaflet.markercluster`).
 *   **💾 Datos Dinámicos:** Toda la información se obtiene en tiempo real desde una base de datos de Airtable.
 *   **🔍 Búsqueda y Filtrado Avanzado:** Filtra proyectos por provincia, tipo, estado o puntuación.
+*   **🔗 URLs Permalinks y SEO:** Cada proyecto tiene su propia URL para facilitar el compartido y mejorar el SEO, gracias al renderizado en servidor.
 *   **📱 Diseño Responsivo:** Experiencia de usuario optimizada tanto para escritorio como para dispositivos móviles.
-*   **🔗 Páginas de Detalle:** Cada proyecto tiene su propia URL para facilitar el compartido y mejorar el SEO.
-*   **🤖 Sitemap Automático:** El sitemap se genera automáticamente durante el build para una mejor indexación.
 
 ### 🛠️ Stack Tecnológico / Tech Stack
 
@@ -46,6 +45,33 @@ Browse, filter, and marvel at the tales of concrete and (broken) dreams that mak
 *   **Backend:** Vercel Serverless Functions (Node.js)
 *   **Base de Datos / Database:** Airtable
 *   **Despliegue / Deployment:** Vercel
+
+---
+
+### 🏗️ Estructura del Proyecto / Project Structure
+
+Una visión general de la organización del proyecto:
+```text
+pormishuevismo/
+├── api/
+│   ├── get-data.js         # Serverless function para obtener todos los datos de Airtable
+│   └── proyecto/
+│       └── [id].js         # Serverless function para generar la página de detalle de un proyecto
+├── public/
+│   ├── assets/             # Imágenes, iconos, etc.
+│   ├── style.css           # Estilos principales
+│   ├── script.js           # Lógica principal del mapa interactivo
+│   └── index.html          # Página principal del mapa
+├── .env.local              # Fichero para variables de entorno (no versionado)
+├── package.json            # Dependencias y scripts del proyecto
+└── vercel.json             # Configuración de despliegue en Vercel (para reescrituras de URL)
+```
+
+### 🔌 API
+
+El proyecto utiliza una única Serverless Function de Vercel para actuar como proxy seguro entre el frontend y la API de Airtable.
+
+*   `GET /api/get-all-records`: Obtiene todos los registros de la base de datos de Airtable que están marcados como "Aprobados". Esto evita exponer las credenciales de la API de Airtable en el lado del cliente.
 
 ---
 
@@ -91,21 +117,28 @@ Sigue estos pasos para tener una copia del proyecto funcionando en tu máquina l
     ```
     La aplicación estará disponible en `http://localhost:3000`.
 
+---
+
 ### 🤝 Contribuciones / Contributing
 
-🇪🇸 ¡Las contribuciones son bienvenidas! La forma más sencilla de aportar es añadiendo nuevos proyectos al mapa.
+🇪🇸 ¡Las contribuciones son bienvenidas! La forma más sencilla de aportar es añadiendo nuevos proyectos al mapa. Para ello, utiliza el siguiente formulario:
 
-👉 **Añade un nuevo proyecto a través de este formulario de Airtable**
+> [!IMPORTANT]
 
-Para otros tipos de contribuciones, por favor sigue el flujo estándar de GitHub (Fork, Branch, Pull Request).
+Para otros tipos de contribuciones de código, por favor sigue el flujo estándar de GitHub (Fork, Branch, Pull Request).
 
 <details>
-<summary>🇬🇧 Contributions are welcome! The easiest way to contribute is by adding new projects to the map.</summary>
+<summary>🇬🇧 Contributions are welcome!</summary>
 <br>
-👉 <b><a href="https://airtable.com/appKVW43s8ln8paHH/pagH805tE1RXU8V9y/form">Add a new project via this Airtable form</a></b>
+The easiest way to contribute is by adding new projects to the map. To do so, please use the following form:
 <br><br>
-For other types of contributions, please follow the standard GitHub flow (Fork, Branch, Pull Request).
+> [!IMPORTANT]
+> 👉 <b><a href="https://airtable.com/appKVW43s8ln8paHH/pagH805tE1RXU8V9y/form">Add a new project via this Airtable form</a></b>
+<br><br>
+For other code contributions, please follow the standard GitHub flow (Fork, Branch, Pull Request).
 </details>
+
+---
 
 ### 📄 Licencia / License
 
@@ -115,6 +148,15 @@ Distribuido bajo la Licencia MIT. Ver `LICENSE` para más información.
 <summary>🇬🇧 Distributed under the MIT License. See `LICENSE` for more information.</summary>
 <br>
 </details>
+
+---
+
+### 📬 Contacto / Contact
+
+*   **Autor / Author:** Mikel Aramendia (@Mendiak)
+*   **Project Link:** https://github.com/Mendiak/pormishuevismo
+
+---
 
 ### 🙏 Agradecimientos / Acknowledgements
 
