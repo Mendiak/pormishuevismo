@@ -21,15 +21,12 @@ const marcadores = [];
  * @returns {string} - La URL de la imagen optimizada.
  */
 function getOptimizedImageUrl(originalUrl, width, quality = 75) {
-    // Detectamos si estamos en un entorno de desarrollo local (ej. `vercel dev`).
-    // En local, la optimización de Vercel no funciona, así que usamos la URL original.
-    const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-
-    if (isLocalDev || !originalUrl || !originalUrl.startsWith('http')) {
+    // Always use original URL in local dev or if the URL is not http(s)
+    const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '';
+    if (isLocalDev || !originalUrl || !/^https?:\/\//.test(originalUrl)) {
         return originalUrl;
     }
-
-    // En producción, usamos el servicio de optimización de Vercel.
+    // In production, use Vercel optimizer
     return `/_vercel/image?url=${encodeURIComponent(originalUrl)}&w=${width}&q=${quality}`;
 }
 
