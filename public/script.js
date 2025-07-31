@@ -350,7 +350,11 @@ function cargarPuntos() {
             <div class="popup-content">
                 <strong>${p.nombre}</strong><br>
                 ${p.ubicacion ? `<div class="popup-location-line"><strong>Ubicación:</strong> ${p.ubicacion}</div>` : ''}
-                <div class="imagen-placeholder"><img src="${p.imagenes.length > 0 ? getOptimizedImageUrl(p.imagenes[0].url, 400) : 'https://via.placeholder.com/300'}" alt="Imagen de ${p.nombre}" width="100%" loading="lazy"></div>
+                <div class="imagen-placeholder"><img src="${
+                    p.imagenes.length > 0
+                        ? getOptimizedImageUrl((typeof p.imagenes[0] === 'object' && p.imagenes[0] !== null) ? p.imagenes[0].url : p.imagenes[0], 400)
+                        : 'https://via.placeholder.com/300'
+                }" alt="Imagen de ${p.nombre}" width="100%" loading="lazy"></div>
                 <div class="popup-descripcion">${p.descripcion}</div>
                 <strong>Presupuesto inicial:${disclaimerPresupuesto}</strong> €${p.presupuestoInicial.toLocaleString()}<br>
                 <strong>Presupuesto final:${disclaimerPresupuesto}</strong> <span style="${estiloPresupuestoFinal}">€${p.presupuestoFinal.toLocaleString()}</span>${textoDesviacion}<br>
@@ -387,9 +391,11 @@ function cargarPuntos() {
         // Generar HTML para las miniaturas de las imágenes
         let thumbnailsHTML = '';
         if (p.imagenes && p.imagenes.length > 0) {
-            const imageElements = p.imagenes.slice(0, 3).map(img =>
-                `<img src="${getOptimizedImageUrl(img.url, 300)}" alt="Miniatura de ${p.nombre}" class="thumbnail-img" loading="lazy" width="150" height="80">`
-            ).join('');
+            const imageElements = p.imagenes.slice(0, 3).map(imgOrUrl => {
+                // Hacemos el código robusto: comprobamos si es un objeto o directamente la URL.
+                const url = (typeof imgOrUrl === 'object' && imgOrUrl !== null) ? imgOrUrl.url : imgOrUrl;
+                return `<img src="${getOptimizedImageUrl(url, 300)}" alt="Miniatura de ${p.nombre}" class="thumbnail-img" loading="lazy" width="150" height="80">`;
+            }).join('');
             thumbnailsHTML = `<div class="thumbnails-container">${imageElements}</div>`;
         } else {
             thumbnailsHTML = '<div class="imagen-placeholder"><span>Sin imágenes</span></div>';
