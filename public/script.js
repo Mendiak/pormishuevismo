@@ -13,21 +13,6 @@ let sidebarOverlay; // Para el overlay en móvil
 
 const marcadores = [];
 
-/**
- * Genera una URL optimizada para una imagen usando el servicio de Vercel.
- * @param {string} originalUrl - La URL de la imagen original.
- * @param {number} width - El ancho deseado en píxeles.
- * @param {number} quality - La calidad de la imagen (1-100).
- * @returns {string} - La URL de la imagen optimizada.
- */
-function getOptimizedImageUrl(originalUrl, width, quality = 75) {
-    const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '';
-    if (isLocalDev || !originalUrl || !/^https?:\/\//.test(originalUrl)) {
-        return originalUrl;
-    }
-    return `/_vercel/image?url=${encodeURIComponent(originalUrl)}&w=${width}&q=${quality}`;
-}
-
 // --- FUNCIONES PRINCIPALES ---
 
 async function cargarDatosDesdeAirtable() {
@@ -346,7 +331,7 @@ function cargarPuntos() {
             <div class="popup-content">
                 <strong>${p.nombre}</strong><br>
                 ${p.ubicacion ? `<div class="popup-location-line"><strong>Ubicación:</strong> ${p.ubicacion}</div>` : ''}
-                <div class="imagen-placeholder"><img src="${p.imagenes.length > 0 ? getOptimizedImageUrl(p.imagenes[0], 400) : 'https://via.placeholder.com/300'}" alt="Imagen de ${p.nombre}" width="100%" loading="lazy"></div>
+                <div class="imagen-placeholder"><img src="${p.imagenes.length > 0 ? p.imagenes[0] : 'https://via.placeholder.com/300'}" alt="Imagen de ${p.nombre}" width="100%" loading="lazy"></div>
                 <div class="popup-descripcion">${p.descripcion}</div>
                 <strong>Presupuesto inicial:${disclaimerPresupuesto}</strong> €${p.presupuestoInicial.toLocaleString()}<br>
                 <strong>Presupuesto final:${disclaimerPresupuesto}</strong> <span style="${estiloPresupuestoFinal}">€${p.presupuestoFinal.toLocaleString()}</span>${textoDesviacion}<br>
@@ -383,8 +368,12 @@ function cargarPuntos() {
         // Generar HTML para las miniaturas de las imágenes
         let thumbnailsHTML = '';
         if (p.imagenes && p.imagenes.length > 0) {
-            const imageElements = p.imagenes.slice(0, 3).map(url =>
-                `<img src="${getOptimizedImageUrl(url, 300)}" alt="Miniatura de ${p.nombre}" class="thumbnail-img" loading="lazy" width="150" height="80">`
+            const imageElements = p.imagenes.slice(0, 3).map(url =>                `<img src="${url}"
+                      alt="Miniatura de ${p.nombre}"
+                      class="thumbnail-img"
+                      loading="lazy"
+                      width="150"
+                      height="80">`
             ).join('');
             thumbnailsHTML = `<div class="thumbnails-container">${imageElements}</div>`;
         } else {

@@ -13,22 +13,6 @@ function escapeHtml(unsafe) {
 
 // Función para generar el HTML de la página de detalle. Es más robusta y fácil de mantener.
 function generateProjectPageHTML(project, isLocalDev = false) {
-    /**
-     * Genera una URL optimizada para una imagen usando el servicio de Vercel.
-     * @param {string} originalUrl - La URL de la imagen original.
-     * @param {number} width - El ancho deseado en píxeles.
-     * @param {number} quality - La calidad de la imagen (1-100).
-     * @returns {string} - La URL de la imagen optimizada.
-     */
-    const getOptimizedImageUrl = (originalUrl, width, quality = 75) => {
-        // Detect local dev by host header (Vercel dev sets host to localhost)
-        const isLocalDev = process.env.VERCEL_ENV === 'development' ||
-            (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'));
-        if (isLocalDev || !originalUrl || !/^https?:\/\//.test(originalUrl)) {
-            return originalUrl;
-        }
-        return `/_vercel/image?url=${encodeURIComponent(originalUrl)}&w=${width}&q=${quality}`;
-    };
     // --- Helper functions ---
     const formatCurrency = (num) => num ? `€${num.toLocaleString('es-ES')}` : 'No especificado';
     
@@ -78,7 +62,7 @@ function generateProjectPageHTML(project, isLocalDev = false) {
 
     const imagenesHtml = project.imagenes && project.imagenes.length > 0
       ? project.imagenes.map(url =>
-          `<img src="${getOptimizedImageUrl(url, 800)}" alt="Imagen de ${escapeHtml(project.nombre)}" loading="lazy" width="400">`
+          `<img src="${escapeHtml(url)}" alt="Imagen de ${escapeHtml(project.nombre)}" loading="lazy" width="400">`
         ).join('')
       : '<div class="imagen-placeholder"><span>Sin imágenes</span></div>';
 
@@ -151,7 +135,7 @@ function generateProjectPageHTML(project, isLocalDev = false) {
                 <div class="project-gallery">
                     <h2>Galería de Imágenes</h2>
                     <div class="image-grid">
-                        ${p.imagen ? p.imagen.map(img => `<a href="${escapeHtml(img.url)}" target="_blank" rel="noopener noreferrer"><img src="${getOptimizedImageUrl(img.url, 400)}" alt="Imagen de ${p.nombre}" loading="lazy" width="250" height="200"></a>`).join('') : '<p>No hay imágenes disponibles.</p>'}
+                        ${p.imagen ? p.imagen.map(img => `<a href="${escapeHtml(img.url)}" target="_blank" rel="noopener noreferrer"><img src="${escapeHtml(img.url)}" alt="Imagen de ${p.nombre}" loading="lazy" width="250" height="200"></a>`).join('') : '<p>No hay imágenes disponibles.</p>'}
                     </div>
                 </div>
 

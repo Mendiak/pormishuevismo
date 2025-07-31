@@ -4,10 +4,5 @@
       "source": "/proyecto/:id",
       "destination": "/api/proyecto/[id].js"
     }
-  ],
-  "images": {
-    "sizes": [150, 400, 800],
-    "domains": ["v5.airtableusercontent.com"],
-    "minimumCacheTTL": 60
-  }
+  ]
 }
