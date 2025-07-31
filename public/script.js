@@ -12,6 +12,9 @@ let activeMarker = null; // Para guardar la referencia al marcador activo
 let markerClusterGroup; // Para agrupar los marcadores
 let sidebarOverlay; // Para el overlay en móvil
 
+let currentGalleryImages = [];
+let currentGalleryIndex = 0;
+
 const marcadores = [];
 
 /**
@@ -383,7 +386,7 @@ function cargarPuntos() {
         let thumbnailsHTML = '';
         if (p.imagenes && p.imagenes.length > 0) {
             const imageElements = p.imagenes.slice(0, 3).map(url =>
-                `<img src="${getOptimizedImageUrl(url, 150)}" alt="Miniatura de ${p.nombre}" class="thumbnail-img" loading="lazy" width="150" height="80">`
+                `<img src="${getOptimizedImageUrl(url, 300)}" alt="Miniatura de ${p.nombre}" class="thumbnail-img" loading="lazy" width="150" height="80">`
             ).join('');
             thumbnailsHTML = `<div class="thumbnails-container">${imageElements}</div>`;
         } else {
@@ -464,8 +467,7 @@ function cargarPuntos() {
         thumbnailImages.forEach((img, index) => {
             img.addEventListener('click', (e) => {
                 e.stopPropagation(); // Evita que se dispare el evento click del contenedor .punto
-                modalImg.src = p.imagenes[index]; // Usa la URL original de la imagen clicada                
-                modal.showModal(); // Usamos el método nativo para mostrar el diálogo
+                openGallery(p.imagenes, index);
             });
         });
 
@@ -694,6 +696,41 @@ function resetActiveElements() {
     mapa.closePopup();
 }
 
+/**
+ * Abre el modal de la galería con un conjunto de imágenes.
+ * @param {string[]} images - Array de URLs de imágenes.
+ * @param {number} startIndex - Índice de la imagen a mostrar primero.
+ */
+function openGallery(images, startIndex) {
+    currentGalleryImages = images;
+    currentGalleryIndex = startIndex;
+    updateGalleryView();
+    modal.showModal();
+}
+
+/**
+ * Actualiza la vista de la galería (imagen, contador, botones).
+ */
+function updateGalleryView() {
+    if (!currentGalleryImages || currentGalleryImages.length === 0) return;
+
+    // Actualizar la imagen principal con una versión optimizada de alta calidad
+    modalImg.src = getOptimizedImageUrl(currentGalleryImages[currentGalleryIndex], 1200, 85);
+
+    // Actualizar el contador y los botones
+    const counter = document.getElementById('gallery-counter');
+    const prevBtn = document.querySelector('.gallery-nav.prev');
+    const nextBtn = document.querySelector('.gallery-nav.next');
+
+    const hasMultipleImages = currentGalleryImages.length > 1;
+
+    // Mostrar/ocultar contador y botones
+    counter.textContent = `${currentGalleryIndex + 1} / ${currentGalleryImages.length}`;
+    counter.hidden = !hasMultipleImages;
+    prevBtn.hidden = !hasMultipleImages;
+    nextBtn.hidden = !hasMultipleImages;
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     // Elementos del Modal
     modal = document.getElementById("image-modal");
@@ -704,6 +741,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const toggleBtn = document.getElementById('sidebar-toggle');
     const clearSearchBtn = document.getElementById('clear-search-button');
     const backToTopBtn = document.getElementById('back-to-top-btn');
+    const galleryPrevBtn = document.querySelector('.gallery-nav.prev');
+    const galleryNextBtn = document.querySelector('.gallery-nav.next');
 
     // Configuración de capas del mapa
     const mapLayers = {
@@ -817,6 +856,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Esto evita que se cierre al hacer clic en el contenido (la imagen).
         if (e.target === modal) {
             modal.close();
+        }
+    });
+
+    // --- Listeners para la galería de imágenes ---
+    galleryPrevBtn.addEventListener('click', () => {
+        currentGalleryIndex = (currentGalleryIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length;
+        updateGalleryView();
+    });
+
+    galleryNextBtn.addEventListener('click', () => {
+        currentGalleryIndex = (currentGalleryIndex + 1) % currentGalleryImages.length;
+        updateGalleryView();
+    });
+
+    document.addEventListener('keydown', (e) => {
+        // Solo navegar si el modal está abierto
+        if (modal && modal.open) {
+            if (e.key === 'ArrowLeft') {
+                galleryPrevBtn.click(); // Reutilizamos la lógica del botón
+            } else if (e.key === 'ArrowRight') {
+                galleryNextBtn.click(); // Reutilizamos la lógica del botón
+            }
+            // La tecla 'Escape' ya cierra el <dialog> de forma nativa.
         }
     });
 
