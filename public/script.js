@@ -21,9 +21,15 @@ const marcadores = [];
  * @returns {string} - La URL de la imagen optimizada.
  */
 function getOptimizedImageUrl(originalUrl, width, quality = 75) {
-    if (!originalUrl || !originalUrl.startsWith('http')) {
-        return originalUrl; // Devuelve la URL original si no es una URL externa válida
+    // Detectamos si estamos en un entorno de desarrollo local (ej. `vercel dev`).
+    // En local, la optimización de Vercel no funciona, así que usamos la URL original.
+    const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+    if (isLocalDev || !originalUrl || !originalUrl.startsWith('http')) {
+        return originalUrl;
     }
+
+    // En producción, usamos el servicio de optimización de Vercel.
     return `/_vercel/image?url=${encodeURIComponent(originalUrl)}&w=${width}&q=${quality}`;
 }
 
@@ -72,7 +78,7 @@ async function cargarDatosDesdeAirtable() {
                 añoInicio: record.fields.añoInicio || null,
                 añoFin: record.fields.añoFin || null,
                 puntuacion: record.fields.puntuacion || 0,
-                imagenes: record.fields.imagen ? record.fields.imagen.map(img => img.url) : [],
+                imagenes: record.fields.imagen || [], // Mantenemos el array de objetos completo para consistencia
                 ubicacion: record.fields.ubicacion || '',
                 estado: record.fields.estado || 'No especificado' // Añadimos el nuevo campo
             };

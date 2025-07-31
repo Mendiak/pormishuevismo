@@ -12,7 +12,7 @@ function escapeHtml(unsafe) {
 }
 
 // Función para generar el HTML de la página de detalle. Es más robusta y fácil de mantener.
-function generateProjectPageHTML(project) {
+function generateProjectPageHTML(project, isLocalDev = false) {
     /**
      * Genera una URL optimizada para una imagen usando el servicio de Vercel.
      * @param {string} originalUrl - La URL de la imagen original.
@@ -21,7 +21,9 @@ function generateProjectPageHTML(project) {
      * @returns {string} - La URL de la imagen optimizada.
      */
     const getOptimizedImageUrl = (originalUrl, width, quality = 75) => {
-        if (!originalUrl || !originalUrl.startsWith('http')) {
+        // En desarrollo local (`vercel dev`), la optimización de Vercel no está disponible.
+        // Usamos la URL original para que las imágenes se vean.
+        if (isLocalDev || !originalUrl || !originalUrl.startsWith('http')) {
             return originalUrl; // Devuelve la URL original si no es una URL externa válida
         }
         return `/_vercel/image?url=${encodeURIComponent(originalUrl)}&w=${width}&q=${quality}`;
@@ -178,13 +180,15 @@ function generateProjectPageHTML(project) {
 }
 
 export default async function handler(request, response) {
+    // Detectamos si estamos corriendo en el entorno de desarrollo de Vercel
+    const isLocalDev = process.env.VERCEL_ENV === 'development';
     const { id } = request.query;
     const { AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID, AIRTABLE_API_TOKEN } = process.env;
 
     if (!AIRTABLE_BASE_ID || !AIRTABLE_TABLE_ID || !AIRTABLE_API_TOKEN) {
         return response.status(500).json({ error: 'Error de configuración del servidor.' });
     }
-
+    
     const airtableUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_ID}/${id}`;
     
     try {
@@ -204,7 +208,7 @@ export default async function handler(request, response) {
 
         const project = await airtableResponse.json();
         
-        const html = generateProjectPageHTML(project);
+        const html = generateProjectPageHTML(project, isLocalDev);
 
         // Cache de 1h, y si está caducada, se sirve la versión antigua hasta 1 semana mientras se revalida en segundo plano.
         response.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=604800');
