@@ -7,13 +7,9 @@ const initialZoom = isMobile ? 5 : 6;
 
 const mapa = L.map('map').setView([40.2, -3.5], initialZoom);
 
-let modal, modalImg, closeBtn;
 let activeMarker = null; // Para guardar la referencia al marcador activo
 let markerClusterGroup; // Para agrupar los marcadores
 let sidebarOverlay; // Para el overlay en móvil
-
-let currentGalleryImages = [];
-let currentGalleryIndex = 0;
 
 const marcadores = [];
 
@@ -348,7 +344,7 @@ function cargarPuntos() {
             <div class="popup-content">
                 <strong>${p.nombre}</strong><br>
                 ${p.ubicacion ? `<div class="popup-location-line"><strong>Ubicación:</strong> ${p.ubicacion}</div>` : ''}
-                <div class="imagen-placeholder"><img src="${p.imagenes.length > 0 ? getOptimizedImageUrl(p.imagenes[0], 400) : 'https://via.placeholder.com/300'}" alt="Imagen de ${p.nombre}" width="100%" loading="lazy"></div>
+                <div class="imagen-placeholder"><img src="${p.imagenes.length > 0 ? getOptimizedImageUrl(p.imagenes[0].url, 400) : 'https://via.placeholder.com/300'}" alt="Imagen de ${p.nombre}" width="100%" loading="lazy"></div>
                 <div class="popup-descripcion">${p.descripcion}</div>
                 <strong>Presupuesto inicial:${disclaimerPresupuesto}</strong> €${p.presupuestoInicial.toLocaleString()}<br>
                 <strong>Presupuesto final:${disclaimerPresupuesto}</strong> <span style="${estiloPresupuestoFinal}">€${p.presupuestoFinal.toLocaleString()}</span>${textoDesviacion}<br>
@@ -385,8 +381,8 @@ function cargarPuntos() {
         // Generar HTML para las miniaturas de las imágenes
         let thumbnailsHTML = '';
         if (p.imagenes && p.imagenes.length > 0) {
-            const imageElements = p.imagenes.slice(0, 3).map(url =>
-                `<img src="${getOptimizedImageUrl(url, 300)}" alt="Miniatura de ${p.nombre}" class="thumbnail-img" loading="lazy" width="150" height="80">`
+            const imageElements = p.imagenes.slice(0, 3).map(img =>
+                `<img src="${getOptimizedImageUrl(img.url, 300)}" alt="Miniatura de ${p.nombre}" class="thumbnail-img" loading="lazy" width="150" height="80">`
             ).join('');
             thumbnailsHTML = `<div class="thumbnails-container">${imageElements}</div>`;
         } else {
@@ -460,15 +456,6 @@ function cargarPuntos() {
             if (event.key === 'Enter' || event.key === ' ') {
                 handleActivation();
             }
-        });
-
-        // Añadir listeners a las miniaturas para abrir el modal
-        const thumbnailImages = div.querySelectorAll('.thumbnail-img');
-        thumbnailImages.forEach((img, index) => {
-            img.addEventListener('click', (e) => {
-                e.stopPropagation(); // Evita que se dispare el evento click del contenedor .punto
-                openGallery(p.imagenes, index);
-            });
         });
 
         let popupOpenTimeout; // Para el retraso al abrir el popup
@@ -696,53 +683,12 @@ function resetActiveElements() {
     mapa.closePopup();
 }
 
-/**
- * Abre el modal de la galería con un conjunto de imágenes.
- * @param {string[]} images - Array de URLs de imágenes.
- * @param {number} startIndex - Índice de la imagen a mostrar primero.
- */
-function openGallery(images, startIndex) {
-    currentGalleryImages = images;
-    currentGalleryIndex = startIndex;
-    updateGalleryView();
-    modal.showModal();
-}
-
-/**
- * Actualiza la vista de la galería (imagen, contador, botones).
- */
-function updateGalleryView() {
-    if (!currentGalleryImages || currentGalleryImages.length === 0) return;
-
-    // Actualizar la imagen principal con una versión optimizada de alta calidad
-    modalImg.src = getOptimizedImageUrl(currentGalleryImages[currentGalleryIndex], 1200, 85);
-
-    // Actualizar el contador y los botones
-    const counter = document.getElementById('gallery-counter');
-    const prevBtn = document.querySelector('.gallery-nav.prev');
-    const nextBtn = document.querySelector('.gallery-nav.next');
-
-    const hasMultipleImages = currentGalleryImages.length > 1;
-
-    // Mostrar/ocultar contador y botones
-    counter.textContent = `${currentGalleryIndex + 1} / ${currentGalleryImages.length}`;
-    counter.hidden = !hasMultipleImages;
-    prevBtn.hidden = !hasMultipleImages;
-    nextBtn.hidden = !hasMultipleImages;
-}
-
 document.addEventListener('DOMContentLoaded', async () => {
-    // Elementos del Modal
-    modal = document.getElementById("image-modal");
-    modalImg = document.getElementById("modal-image");
-    // El botón de cierre ahora funciona automáticamente gracias a <form method="dialog">
     const sidebar = document.getElementById('sidebar');
     sidebarOverlay = document.getElementById('sidebar-overlay');
     const toggleBtn = document.getElementById('sidebar-toggle');
     const clearSearchBtn = document.getElementById('clear-search-button');
     const backToTopBtn = document.getElementById('back-to-top-btn');
-    const galleryPrevBtn = document.querySelector('.gallery-nav.prev');
-    const galleryNextBtn = document.querySelector('.gallery-nav.next');
 
     // Configuración de capas del mapa
     const mapLayers = {
@@ -849,39 +795,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    // Cierra el modal si se hace clic en el fondo (backdrop)
-    // El comportamiento nativo de <dialog> ya cierra con la tecla Esc.
-    modal.addEventListener('click', (e) => {
-        // Si el clic es en el propio elemento <dialog> (el fondo), ciérralo.
-        // Esto evita que se cierre al hacer clic en el contenido (la imagen).
-        if (e.target === modal) {
-            modal.close();
-        }
-    });
-
-    // --- Listeners para la galería de imágenes ---
-    galleryPrevBtn.addEventListener('click', () => {
-        currentGalleryIndex = (currentGalleryIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length;
-        updateGalleryView();
-    });
-
-    galleryNextBtn.addEventListener('click', () => {
-        currentGalleryIndex = (currentGalleryIndex + 1) % currentGalleryImages.length;
-        updateGalleryView();
-    });
-
-    document.addEventListener('keydown', (e) => {
-        // Solo navegar si el modal está abierto
-        if (modal && modal.open) {
-            if (e.key === 'ArrowLeft') {
-                galleryPrevBtn.click(); // Reutilizamos la lógica del botón
-            } else if (e.key === 'ArrowRight') {
-                galleryNextBtn.click(); // Reutilizamos la lógica del botón
-            }
-            // La tecla 'Escape' ya cierra el <dialog> de forma nativa.
-        }
-    });
-
     // Listeners para los filtros <select> y ordenación
     document.getElementById('provincia-select').addEventListener('change', cargarPuntos);
     document.getElementById('tipo-select').addEventListener('change', cargarPuntos);
@@ -975,11 +888,5 @@ function actualizarEstilosFiltros() {
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     if (mapa && mapa.closePopup) mapa.closePopup();
-    // Si tienes modales personalizados:
-    const modal = document.getElementById('image-modal');
-    if (modal && modal.classList.contains('show')) {
-      modal.classList.remove('show');
-      modal.setAttribute('aria-hidden', 'true');
-    }
   }
 });

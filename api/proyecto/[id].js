@@ -152,8 +152,8 @@ function generateProjectPageHTML(project) {
             <footer>
                 <a href="https://mendiak.github.io/portfolio/" target="_blank" rel="noopener noreferrer" title="Portfolio de Mikel Aramendia"><i class="bi bi-code-slash" aria-hidden="true"></i> Una web de Mikel Aramendia</a>
                 <a href="https://github.com/Mendiak/pormishuevismo" target="_blank" rel="noopener noreferrer" title="Ver el código fuente en GitHub"><i class="bi bi-github" aria-hidden="true"></i> Ver en GitHub</a>
-                <a href="https://airtable.com/appKVW43s8ln8paHH/pagH805tE1RXU8V9y/form" target="_blank" rel="noopener noreferrer" title="Añade un nuevo punto al mapa" class="footer-cta"><i class="bi bi-plus-circle" aria-hidden="true"></i> Añadir un proyecto</a>
                 <a href="https://www.oficinaperiferia.com/" target="_blank" rel="noopener noreferrer" title="Web de Erik Harley"><i class="bi bi-lightbulb" aria-hidden="true"></i> Inspirado por Erik Harley</a>
+                <a href="https://airtable.com/appKVW43s8ln8paHH/pagH805tE1RXU8V9y/form" target="_blank" rel="noopener noreferrer" title="Añade un nuevo punto al mapa" class="footer-cta"><i class="bi bi-plus-circle" aria-hidden="true"></i> Añadir un proyecto</a>
             </footer>
             <script>
   document.addEventListener('DOMContentLoaded', function() {
