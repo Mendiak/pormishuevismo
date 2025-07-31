@@ -21,10 +21,11 @@ function generateProjectPageHTML(project, isLocalDev = false) {
      * @returns {string} - La URL de la imagen optimizada.
      */
     const getOptimizedImageUrl = (originalUrl, width, quality = 75) => {
-        // En desarrollo local (`vercel dev`), la optimización de Vercel no está disponible.
-        // Usamos la URL original para que las imágenes se vean.
-        if (isLocalDev || !originalUrl || !originalUrl.startsWith('http')) {
-            return originalUrl; // Devuelve la URL original si no es una URL externa válida
+        // Detect local dev by host header (Vercel dev sets host to localhost)
+        const isLocalDev = process.env.VERCEL_ENV === 'development' ||
+            (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'));
+        if (isLocalDev || !originalUrl || !/^https?:\/\//.test(originalUrl)) {
+            return originalUrl;
         }
         return `/_vercel/image?url=${encodeURIComponent(originalUrl)}&w=${width}&q=${quality}`;
     };
@@ -74,6 +75,12 @@ function generateProjectPageHTML(project, isLocalDev = false) {
     </div>
   </div>
 `;
+
+    const imagenesHtml = project.imagenes && project.imagenes.length > 0
+      ? project.imagenes.map(url =>
+          `<img src="${getOptimizedImageUrl(url, 800)}" alt="Imagen de ${escapeHtml(project.nombre)}" loading="lazy" width="400">`
+        ).join('')
+      : '<div class="imagen-placeholder"><span>Sin imágenes</span></div>';
 
     return `
         <!DOCTYPE html>
